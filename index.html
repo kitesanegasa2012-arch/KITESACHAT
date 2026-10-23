@@ -119,15 +119,16 @@
         // ============================================================
         // FIREBASE CONFIGURATION (Koodii suuraa kee irraa waraabame)
         // ============================================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyCraTczVNI2oBTDp531KHyu6cINac37nhE",
-            authDomain: "kitchat-6dd20.firebaseapp.com",
-            projectId: "kitchat-6dd20",
-            storageBucket: "kitchat-6dd20.firebasestorage.app",
-            messagingSenderId: "830131023971",
-            appId: "1:830131023971:web:b694c059bfb978bb3b0856",
-            measurementId: "G-HCB3W42NJV"
-        };
+       const firebaseConfig = {
+    apiKey: "AIzaSyCraTczVNI2oBTDp531KHyu6cINac37nhE",
+    authDomain: "kitchat-6dd20.firebaseapp.com",
+    databaseURL: "https://kitchat-6dd20-default-rtdb.asia-southeast1.firebasedatabase.app", // <--- Linkii kana galchi
+    projectId: "kitchat-6dd20",
+    storageBucket: "kitchat-6dd20.firebasestorage.app",
+    messagingSenderId: "830131023971",
+    appId: "1:830131023971:web:b694c059bfb978bb3b0856",
+    measurementId: "G-HCB3W42NJV"
+};
 
         // Initialize Firebase (compat mode)
         firebase.initializeApp(firebaseConfig);
