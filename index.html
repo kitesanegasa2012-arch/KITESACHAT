@@ -24,15 +24,14 @@
         body { background: #f0f7f0; height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; }
         .app-container { height: 100vh; width: 100%; max-width: 420px; background: #ffffff; display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
         
-        /* Screen Transitions */
         .screen { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; background: #f8fafc; z-index: 50; }
         .screen.active { display: flex; }
         
-        /* Message Bubbles */
-        .msg-bubble { max-width: 80%; padding: 8px 12px; border-radius: 18px; font-size: 0.95rem; word-break: break-word; margin-bottom: 4px; }
+        /* Chat Styles */
+        .msg-bubble { max-width: 80%; padding: 8px 12px; border-radius: 18px; font-size: 0.95rem; word-break: break-word; margin-bottom: 4px; position: relative; }
         .msg-outgoing { background: #dcf8c6; color: #000; border-bottom-right-radius: 4px; margin-left: auto; }
         .msg-incoming { background: #ffffff; color: #000; border-bottom-left-radius: 4px; margin-right: auto; }
-        .msg-time { font-size: 0.65rem; color: #888; float: right; margin-left: 8px; margin-top: 4px; }
+        .msg-time { font-size: 0.65rem; color: #888; float: right; margin-left: 8px; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
         
         /* Bottom Navigation */
         .bottom-nav { position: absolute; bottom: 0; width: 100%; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 8px 0; z-index: 40; }
@@ -60,11 +59,9 @@
         <div id="chatsScreen" class="screen">
             <header class="bg-[#16a34a] px-4 py-3 flex items-center justify-between shadow-sm z-10">
                 <h1 class="text-white font-semibold text-xl">Kitchat</h1>
-                <button class="text-white text-lg"><i class="fas fa-search"></i></button>
             </header>
             <div id="userList" class="flex-1 overflow-y-auto bg-white pb-20">
-                <!-- Users injected here -->
-                <div class="p-4 text-center text-gray-500">Namoota galmaa'an loading...</div>
+                <div class="p-4 text-center text-gray-500">Namoota galmaa'an barbaadaa jira...</div>
             </div>
             <div class="bottom-nav">
                 <div class="nav-item active" onclick="switchTab('chats')"><i class="fas fa-comment"></i>Chats</div>
@@ -79,7 +76,7 @@
                 <h1 class="text-white font-semibold text-xl">Contacts</h1>
             </header>
             <div id="contactsList" class="flex-1 overflow-y-auto bg-white pb-20">
-                <!-- Contacts injected here -->
+                <div class="p-4 text-center text-gray-500">Namoota galmaa'an barbaadaa jira...</div>
             </div>
             <div class="bottom-nav">
                 <div class="nav-item" onclick="switchTab('chats')"><i class="fas fa-comment"></i>Chats</div>
@@ -99,12 +96,6 @@
                     <img id="profilePic" src="https://ui-avatars.com/api/?name=User&background=16a34a&color=fff&size=128" class="w-24 h-24 rounded-full object-cover mb-3 border-4 border-green-100">
                     <h2 id="profileName" class="text-xl font-bold text-gray-800">Loading...</h2>
                     <p id="profileEmail" class="text-gray-500 text-sm">Loading...</p>
-                    <div class="mt-4 flex gap-4 w-full justify-center">
-                        <div class="text-center">
-                            <p class="text-green-600 font-bold text-lg">0</p>
-                            <p class="text-xs text-gray-500">Messages</p>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="bottom-nav">
@@ -134,7 +125,7 @@
             <!-- Input Bar -->
             <div class="bg-gray-100 border-t border-gray-200 px-2 py-2 flex items-center gap-2 absolute bottom-0 w-full z-40">
                 <button onclick="document.getElementById('fileInput').click()" class="text-gray-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200">
-                    <i class="fas fa-plus"></i>
+                    <i class="fas fa-paperclip text-lg"></i>
                 </button>
                 <input type="file" id="fileInput" class="hidden" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" onchange="uploadFile(event)">
                 
@@ -168,7 +159,7 @@
 
         let currentUser = null;
         let currentChatId = null;
-        let currentChatUser = null;
+        let messagesListener = null;
 
         // ============================================================
         // AUTH & SCREEN NAVIGATION
@@ -188,7 +179,7 @@
                 document.getElementById('loginScreen').classList.remove('active');
                 switchTab('chats');
                 
-                // Save/Update User in Database
+                // Save User to Database
                 db.ref('users/' + user.uid).set({
                     name: user.displayName || 'User',
                     email: user.email,
@@ -234,25 +225,35 @@
                 const users = snapshot.val();
                 const chatsList = document.getElementById('userList');
                 const contactsList = document.getElementById('contactsList');
+                
+                // Clear lists but keep loading text if needed
                 chatsList.innerHTML = '';
                 contactsList.innerHTML = '';
 
+                let userCount = 0;
+
                 for (const uid in users) {
                     if (uid === currentUser.uid) continue; // Skip self
+                    userCount++;
                     const u = users[uid];
                     
-                    // HTML for User Item
                     const userHTML = `
-                        <div onclick="openChat('${uid}', '${u.name}', '${u.photoURL}')" class="flex items-center gap-3 p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50">
-                            <img src="${u.photoURL}" class="w-12 h-12 rounded-full object-cover">
+                        <div onclick="openChat('${uid}', '${u.name}', '${u.photoURL}')" class="flex items-center gap-3 p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition">
+                            <img src="${u.photoURL}" class="w-12 h-12 rounded-full object-cover border border-gray-200">
                             <div class="flex-1">
                                 <h3 class="font-semibold text-gray-800">${u.name}</h3>
                                 <p class="text-xs text-gray-500">Tap to chat</p>
                             </div>
+                            <i class="fas fa-comment-dots text-green-500"></i>
                         </div>
                     `;
                     chatsList.innerHTML += userHTML;
                     contactsList.innerHTML += userHTML;
+                }
+
+                if (userCount === 0) {
+                    chatsList.innerHTML = '<div class="p-4 text-center text-gray-500">Ammaaf namni biraa hin seenne. Nama biraa akka seenuuf bilbila biraa fayyadami.</div>';
+                    contactsList.innerHTML = '<div class="p-4 text-center text-gray-500">Ammaaf namni biraa hin seenne.</div>';
                 }
             });
         }
@@ -261,8 +262,7 @@
         // CHAT ROOM LOGIC
         // ============================================================
         function openChat(uid, name, photo) {
-            currentChatUser = uid;
-            // Generate consistent Chat ID
+            // Generate consistent Chat ID (sorted UIDs)
             currentChatId = currentUser.uid > uid ? currentUser.uid + "_" + uid : uid + "_" + currentUser.uid;
 
             document.getElementById('chatName').textContent = name;
@@ -278,14 +278,17 @@
             document.getElementById('chatRoomScreen').classList.remove('active');
             switchTab('chats');
             currentChatId = null;
+            if(messagesListener) {
+                db.ref('chats/' + currentChatId + '/messages').off('child_added', messagesListener);
+            }
         }
 
-        let messagesListener = null;
         function loadMessages() {
             const chatMessagesDiv = document.getElementById('chatMessages');
             chatMessagesDiv.innerHTML = '';
             
-            if (messagesListener) db.ref('chats/' + currentChatId + '/messages').off('child_added', messagesListener);
+            // Detach old listener
+            if (messagesListener) db.ref('chats/' + currentChatId + '/messages').off();
 
             // Listen for new messages
             messagesListener = db.ref('chats/' + currentChatId + '/messages').limitToLast(100).on('child_added', (snapshot) => {
@@ -299,32 +302,30 @@
             const isOut = msg.senderId === currentUser.uid;
             
             const div = document.createElement('div');
-            div.className = `flex ${isOut ? 'justify-end' : 'justify-start'}`;
+            div.className = `flex ${isOut ? 'justify-end' : 'justify-start'} mb-1`;
             div.setAttribute('data-msg-id', msgId);
 
             let contentHTML = '';
             
-            // Handle Text
+            // Render based on type
             if (msg.type === 'text') {
-                contentHTML = `<p>${msg.text}</p>`;
-            } 
-            // Handle Media (Image/Video/File)
-            else if (msg.type === 'image') {
+                contentHTML = `<p class="text-[15px]">${msg.text}</p>`;
+            } else if (msg.type === 'image') {
                 contentHTML = `<img src="${msg.url}" class="max-w-[200px] rounded-lg mb-1 cursor-pointer" onclick="window.open('${msg.url}')">`;
             } else if (msg.type === 'video') {
                 contentHTML = `<video src="${msg.url}" controls class="max-w-[200px] rounded-lg mb-1"></video>`;
             } else if (msg.type === 'audio') {
                 contentHTML = `<audio src="${msg.url}" controls class="max-w-[200px] mb-1"></audio>`;
             } else if (msg.type === 'file') {
-                contentHTML = `<a href="${msg.url}" target="_blank" class="flex items-center gap-2 bg-gray-200 p-2 rounded-lg text-blue-600 text-sm mb-1"><i class="fas fa-file"></i> Download File</a>`;
+                contentHTML = `<a href="${msg.url}" target="_blank" class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg text-blue-600 text-sm mb-1"><i class="fas fa-file-alt text-lg"></i> Download File</a>`;
             }
 
             // Checkmarks for Read/Delivered
             let checkmarks = '';
             if (isOut) {
                 checkmarks = msg.read ? 
-                    `<i class="fas fa-check-double text-blue-500 text-[10px]"></i>` : 
-                    `<i class="fas fa-check text-gray-500 text-[10px]"></i>`;
+                    `<i class="fas fa-check-double text-[#34b7f1] text-[12px]"></i>` : 
+                    `<i class="fas fa-check text-gray-500 text-[12px]"></i>`;
             }
 
             div.innerHTML = `
@@ -337,7 +338,7 @@
             chatMessagesDiv.appendChild(div);
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
 
-            // Mark as read if incoming
+            // Mark as read if incoming and unread
             if (!isOut && !msg.read) {
                 db.ref('chats/' + currentChatId + '/messages/' + msgId).update({ read: true });
             }
@@ -373,7 +374,9 @@
             const file = event.target.files[0];
             if (!file || !currentChatId) return;
 
-            // Show loading or status here (omitted for brevity)
+            // Alert user that upload started
+            alert("Faayiliin olkaa'amaa jira... Maaloo eegaa.");
+
             const storageRef = storage.ref('chat_files/' + Date.now() + '_' + file.name);
             
             try {
@@ -397,11 +400,10 @@
 
                 db.ref('chats/' + currentChatId + '/messages').push(msgData);
             } catch (error) {
-                alert("Dogoggora faayilii erguu: " + error.message);
+                alert("Dogoggora faayilii erguu: " + error.message + "\nMirkaneessi Firebase Storage kee dandeessifameera.");
             }
             event.target.value = ''; // Reset input
         }
-
     </script>
 </body>
 </html>
