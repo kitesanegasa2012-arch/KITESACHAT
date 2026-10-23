@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kitchat - Appii Qunnamtii Real-time</title>
 
-    <!-- Manifest sirreessee: Icon PNG 192 fi 512 of keessatti qabata -->
+    <!-- Manifest -->
     <link rel="manifest" href='data:application/manifest+json,{"name":"Kitchat","short_name":"Kitchat","description":"Kitchat Realtime Messenger","start_url":"./","display":"standalone","background_color":"%2316a34a","theme_color":"%2316a34a","icons":[{"src":"https://ui-avatars.com/api/?name=K&background=16a34a&color=fff&size=192","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"https://ui-avatars.com/api/?name=K&background=16a34a&color=fff&size=512","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
 
     <!-- Tailwind CSS -->
@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs (v9 compat mode - kan import hin barbaachifne) -->
+    <!-- Firebase SDKs (compat mode) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -40,7 +40,7 @@
 <body class="h-full light">
     <div class="app-container">
         
-        <!-- ================= LOGIN SCREEN ================= -->
+        <!-- LOGIN SCREEN -->
         <div id="loginScreen" class="screen active px-6 py-10 justify-center items-center bg-white">
             <div class="w-20 h-20 rounded-3xl bg-[#16a34a] flex items-center justify-center text-white text-4xl mb-6 shadow-lg">
                 <i class="fas fa-comment-dots"></i>
@@ -48,40 +48,15 @@
             <h1 class="text-2xl font-bold text-gray-800 mb-2">Baga nagaan dhuftan Kitchat</h1>
             <p class="text-gray-500 text-sm mb-8 text-center">Qunnamtii real-time, saffisaa fi salphaa.</p>
 
-            <!-- Phone Auth (Yoo Spark plan irra jirtu hin hojjetu, Gmail qofa fayyadami) -->
-            <div class="w-full mb-4">
-                <label class="block text-gray-600 text-sm font-medium mb-1">Lakkoofsa Bilbilaa</label>
-                <div class="flex gap-2">
-                    <input id="phoneNumber" type="tel" placeholder="+251911234567" class="flex-1 bg-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#16a34a]/30 border border-transparent focus:border-[#16a34a]/30">
-                    <button id="sendOtpBtn" class="bg-[#16a34a] text-white px-4 rounded-xl text-sm font-medium hover:bg-[#15803d] transition">Ergi</button>
-                </div>
-            </div>
-
-            <!-- OTP Verification -->
-            <div id="otpSection" class="w-full mb-4 hidden">
-                <label class="block text-gray-600 text-sm font-medium mb-1">Koodii Mirkaneessaa (OTP)</label>
-                <div class="flex gap-2">
-                    <input id="otpCode" type="text" placeholder="123456" class="flex-1 bg-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#16a34a]/30 border border-transparent focus:border-[#16a34a]/30">
-                    <button id="verifyOtpBtn" class="bg-[#16a34a] text-white px-4 rounded-xl text-sm font-medium hover:bg-[#15803d] transition">Mirkaneessi</button>
-                </div>
-                <div id="recaptcha-container" class="mt-2"></div>
-            </div>
-
-            <div class="flex items-center w-full my-4">
-                <div class="flex-1 h-px bg-gray-200"></div>
-                <span class="px-3 text-gray-400 text-xs">ykn</span>
-                <div class="flex-1 h-px bg-gray-200"></div>
-            </div>
-
             <!-- Google Sign-In -->
-            <button id="googleSignInBtn" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+            <button id="googleSignInBtn" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition shadow-sm">
                 <i class="fab fa-google text-red-500"></i> Gmail fayyadamuun seeni
             </button>
 
             <p class="text-xs text-gray-400 mt-8 text-center">Kitchat Realtime Messenger by Kitesa Negasa</p>
         </div>
 
-        <!-- ================= CHAT SCREEN ================= -->
+        <!-- CHAT SCREEN -->
         <div id="chatScreen" class="screen">
             <header class="bg-[#16a34a] px-4 py-3 flex items-center justify-between shadow-sm z-10">
                 <div class="flex items-center gap-3">
@@ -117,20 +92,20 @@
 
     <script>
         // ============================================================
-        // FIREBASE CONFIGURATION (Koodii suuraa kee irraa waraabame)
+        // FIREBASE CONFIGURATION (Haaromsameera)
         // ============================================================
-    const firebaseConfig = {
-    apiKey: "AIzaSyCraTczVNI2oBTDp531KHyu6cINac37nhE", // Kun sirrii dha
-    authDomain: "kitchat-6dd20.firebaseapp.com", // Kun sirrii dha
-    databaseURL: "https://kitchat-6dd20-default-rtdb.asia-southeast1.firebasedatabase.app", // <--- Kana GALCHI
-    projectId: "kitchat-6dd20",
-    storageBucket: "kitchat-6dd20.firebasestorage.app",
-    messagingSenderId: "830131023971",
-    appId: "1:830131023971:web:b694c059bfb978bb3b0856",
-    measurementId: "G-HCB3W42NJV"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyCraTczVNl2oBTDp531KHyu6cINac37nhE",
+            authDomain: "kitchat-6dd20.firebaseapp.com",
+            databaseURL: "https://kitchat-6dd20-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "kitchat-6dd20",
+            storageBucket: "kitchat-6dd20.firebasestorage.app",
+            messagingSenderId: "830131023971",
+            appId: "1:830131023971:web:b694c059bfb978bb3b0856",
+            measurementId: "G-HCB3W42NJV"
+        };
 
-        // Initialize Firebase (compat mode)
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
@@ -138,11 +113,6 @@
         // DOM Elements
         const loginScreen = document.getElementById('loginScreen');
         const chatScreen = document.getElementById('chatScreen');
-        const phoneNumberInput = document.getElementById('phoneNumber');
-        const sendOtpBtn = document.getElementById('sendOtpBtn');
-        const otpSection = document.getElementById('otpSection');
-        const otpCodeInput = document.getElementById('otpCode');
-        const verifyOtpBtn = document.getElementById('verifyOtpBtn');
         const googleSignInBtn = document.getElementById('googleSignInBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const chatContainer = document.getElementById('chatContainer');
@@ -151,8 +121,6 @@
         const userDisplayName = document.getElementById('userDisplayName');
 
         let currentUser = null;
-        let recaptchaVerifier = null;
-        let confirmationResult = null;
         let messagesRef = null;
 
         // ============================================================
@@ -164,16 +132,15 @@
                 loginScreen.classList.remove('active');
                 chatScreen.classList.add('active');
                 
-                // Display user name or phone
+                // Display user name
                 if (user.displayName) {
                     userDisplayName.textContent = user.displayName;
-                } else if (user.phoneNumber) {
-                    userDisplayName.textContent = user.phoneNumber;
+                } else if (user.email) {
+                    userDisplayName.textContent = user.email;
                 } else {
-                    userDisplayName.textContent = user.email || 'User';
+                    userDisplayName.textContent = 'User';
                 }
 
-                // Load messages
                 loadMessages();
             } else {
                 currentUser = null;
@@ -188,69 +155,6 @@
         });
 
         // ============================================================
-        // PHONE AUTHENTICATION (Yoo Spark plan jirtu, kun hin hojjetu)
-        // ============================================================
-        function initRecaptcha() {
-            if (!recaptchaVerifier) {
-                recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                    'size': 'invisible',
-                    'callback': (response) => {}
-                });
-                recaptchaVerifier.render();
-            }
-        }
-
-        sendOtpBtn.addEventListener('click', async () => {
-            const phoneNumber = phoneNumberInput.value.trim();
-            if (!phoneNumber) {
-                alert('Maaloo lakkoofsa bilbilaa galchi.');
-                return;
-            }
-
-            initRecaptcha();
-
-            try {
-                sendOtpBtn.disabled = true;
-                sendOtpBtn.textContent = 'Ergaa jira...';
-                
-                confirmationResult = await auth.signInWithPhoneNumber(phoneNumber, recaptchaVerifier);
-                
-                otpSection.classList.remove('hidden');
-                sendOtpBtn.textContent = 'Ergi';
-                sendOtpBtn.disabled = false;
-                alert('Koodiin mirkaneessaa ergameera. Bilbila kee ilaali.');
-            } catch (error) {
-                console.error('Phone auth error:', error);
-                alert('Dogoggora: ' + error.message + ' (Yoo Spark plan irra jirtu, Phone Auth hin hojjetu. Gmail fayyadami.)');
-                sendOtpBtn.textContent = 'Ergi';
-                sendOtpBtn.disabled = false;
-                if (recaptchaVerifier) {
-                    recaptchaVerifier.clear();
-                    recaptchaVerifier = null;
-                }
-            }
-        });
-
-        verifyOtpBtn.addEventListener('click', async () => {
-            const code = otpCodeInput.value.trim();
-            if (!code || !confirmationResult) {
-                alert('Maaloo koodii mirkaneessaa galchi.');
-                return;
-            }
-
-            try {
-                verifyOtpBtn.disabled = true;
-                verifyOtpBtn.textContent = 'Mirkaneessaa jira...';
-                await confirmationResult.confirm(code);
-            } catch (error) {
-                console.error('OTP verification error:', error);
-                alert('Koodiin dogoggoraa dha. Irra deebi\'ii yaali.');
-                verifyOtpBtn.textContent = 'Mirkaneessi';
-                verifyOtpBtn.disabled = false;
-            }
-        });
-
-        // ============================================================
         // GOOGLE SIGN-IN
         // ============================================================
         googleSignInBtn.addEventListener('click', async () => {
@@ -259,7 +163,12 @@
                 await auth.signInWithPopup(provider);
             } catch (error) {
                 console.error('Google sign-in error:', error);
-                alert('Dogoggora seenuu Gmail: ' + error.message);
+                // Dogoggora popup yoo dhufu redirect fayyadami
+                if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+                    await auth.signInWithRedirect(provider);
+                } else {
+                    alert('Dogoggora seenuu Gmail: ' + error.message);
+                }
             }
         });
 
@@ -336,7 +245,7 @@
             const messageData = {
                 text: text,
                 senderId: currentUser.uid,
-                senderName: currentUser.displayName || currentUser.phoneNumber || currentUser.email || 'User',
+                senderName: currentUser.displayName || currentUser.email || 'User',
                 timestamp: firebase.database.ServerValue.TIMESTAMP,
                 time: timeStr
             };
@@ -360,9 +269,7 @@
             }
         });
 
-        // ============================================================
-        // SERVICE WORKER REGISTRATION (PWA installability)
-        // ============================================================
+        // Service Worker (PWA)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('data:text/javascript,self.addEventListener("fetch",()=>{})')
