@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kitchat - Telegram Clone</title>
 
-    <!-- MANIFEST HAARAA: Icoonii Onnee Magariisaa fi Adii -->
+    <!-- MANIFEST: Icoonii Onnee Magariisaa fi Adii -->
     <link rel="manifest" href='data:application/manifest+json,{"name":"Kitchat","short_name":"Kitchat","description":"Realtime Messenger","start_url":"./","display":"standalone","background_color":"%2316a34a","theme_color":"%2316a34a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%2316a34a%22/><path d=%22M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z%22 fill=%22white%22/></svg>","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"},{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%2316a34a%22/><path d=%22M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z%22 fill=%22white%22/></svg>","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'>
 
     <!-- Tailwind CSS -->
@@ -46,7 +46,7 @@
         <!-- LOGIN SCREEN -->
         <div id="loginScreen" class="screen active px-6 py-10 justify-center items-center bg-white" style="z-index: 100;">
             <div class="w-20 h-20 rounded-3xl bg-[#16a34a] flex items-center justify-center text-white text-4xl mb-6 shadow-lg">
-                <i class="fas fa-heart"></i> <!-- Onnee magariisaa -->
+                <i class="fas fa-heart"></i>
             </div>
             <h1 class="text-2xl font-bold text-gray-800 mb-2">Baga nagaan dhuftan Kitchat</h1>
             <p class="text-gray-500 text-sm mb-8 text-center">Qunnamtii real-time, saffisaa fi salphaa.</p>
@@ -105,7 +105,7 @@
             </div>
         </div>
 
-        <!-- CHAT ROOM SCREEN -->
+        <!-- CHAT ROOM SCREEN (Fuula barruun itti jiru) -->
         <div id="chatRoomScreen" class="screen">
             <header class="bg-[#16a34a] px-4 py-2 flex items-center justify-between shadow-sm z-10">
                 <div class="flex items-center gap-3">
@@ -122,7 +122,7 @@
                 <!-- Messages injected here -->
             </div>
 
-            <!-- Input Bar -->
+            <!-- INPUT BAR: Kan barruu fi button ergaa qabu -->
             <div class="bg-gray-100 border-t border-gray-200 px-2 py-2 flex items-center gap-2 absolute bottom-0 w-full z-40">
                 <button onclick="document.getElementById('fileInput').click()" class="text-gray-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200">
                     <i class="fas fa-paperclip text-lg"></i>
@@ -179,14 +179,12 @@
                 document.getElementById('loginScreen').classList.remove('active');
                 switchTab('chats');
                 
-                // Save User to Database
                 db.ref('users/' + user.uid).set({
                     name: user.displayName || 'User',
                     email: user.email,
                     photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}&background=random`
                 });
 
-                // Profile Screen Info
                 document.getElementById('profileName').textContent = user.displayName || 'User';
                 document.getElementById('profileEmail').textContent = user.email;
                 if(user.photoURL) document.getElementById('profilePic').src = user.photoURL;
