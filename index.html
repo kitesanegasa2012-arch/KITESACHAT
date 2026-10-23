@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs (v9 compat mode for simplicity) -->
+    <!-- Firebase SDKs (v9 compat mode - kan import hin barbaachifne) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -48,7 +48,7 @@
             <h1 class="text-2xl font-bold text-gray-800 mb-2">Baga nagaan dhuftan Kitchat</h1>
             <p class="text-gray-500 text-sm mb-8 text-center">Qunnamtii real-time, saffisaa fi salphaa.</p>
 
-            <!-- Phone Auth -->
+            <!-- Phone Auth (Yoo Spark plan irra jirtu hin hojjetu, Gmail qofa fayyadami) -->
             <div class="w-full mb-4">
                 <label class="block text-gray-600 text-sm font-medium mb-1">Lakkoofsa Bilbilaa</label>
                 <div class="flex gap-2">
@@ -117,19 +117,19 @@
 
     <script>
         // ============================================================
-        // FIREBASE CONFIGURATION - ITTI GALCHI
+        // FIREBASE CONFIGURATION (Koodii suuraa kee irraa waraabame)
         // ============================================================
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-            projectId: "YOUR_PROJECT",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyCraTczVNI2oBTDp531KHyu6cINac37nhE",
+            authDomain: "kitchat-6dd20.firebaseapp.com",
+            projectId: "kitchat-6dd20",
+            storageBucket: "kitchat-6dd20.firebasestorage.app",
+            messagingSenderId: "830131023971",
+            appId: "1:830131023971:web:b694c059bfb978bb3b0856",
+            measurementId: "G-HCB3W42NJV"
         };
 
-        // Initialize Firebase
+        // Initialize Firebase (compat mode)
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
@@ -187,17 +187,13 @@
         });
 
         // ============================================================
-        // PHONE AUTHENTICATION
+        // PHONE AUTHENTICATION (Yoo Spark plan jirtu, kun hin hojjetu)
         // ============================================================
-        
-        // Initialize Recaptcha (invisible)
         function initRecaptcha() {
             if (!recaptchaVerifier) {
                 recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
                     'size': 'invisible',
-                    'callback': (response) => {
-                        // reCAPTCHA solved
-                    }
+                    'callback': (response) => {}
                 });
                 recaptchaVerifier.render();
             }
@@ -224,7 +220,7 @@
                 alert('Koodiin mirkaneessaa ergameera. Bilbila kee ilaali.');
             } catch (error) {
                 console.error('Phone auth error:', error);
-                alert('Dogoggora: ' + error.message);
+                alert('Dogoggora: ' + error.message + ' (Yoo Spark plan irra jirtu, Phone Auth hin hojjetu. Gmail fayyadami.)');
                 sendOtpBtn.textContent = 'Ergi';
                 sendOtpBtn.disabled = false;
                 if (recaptchaVerifier) {
@@ -245,7 +241,6 @@
                 verifyOtpBtn.disabled = true;
                 verifyOtpBtn.textContent = 'Mirkaneessaa jira...';
                 await confirmationResult.confirm(code);
-                // Auth state listener will handle UI switch
             } catch (error) {
                 console.error('OTP verification error:', error);
                 alert('Koodiin dogoggoraa dha. Irra deebi\'ii yaali.');
@@ -261,7 +256,6 @@
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 await auth.signInWithPopup(provider);
-                // Auth state listener handles redirect
             } catch (error) {
                 console.error('Google sign-in error:', error);
                 alert('Dogoggora seenuu Gmail: ' + error.message);
@@ -283,18 +277,14 @@
             
             messagesRef = database.ref('messages');
             
-            // Listen for new messages (limit last 100)
             messagesRef.limitToLast(100).on('child_added', (snapshot) => {
                 const msg = snapshot.val();
                 const msgId = snapshot.key;
-                
-                // Skip if message is from current user (already displayed optimistically? No, we'll use this for all)
                 renderMessage(msg, msgId);
             });
         }
 
         function renderMessage(msg, msgId) {
-            // Avoid duplicate rendering
             if (document.querySelector(`[data-msg-id="${msgId}"]`)) return;
             
             const isOut = msg.senderId === currentUser.uid;
@@ -305,7 +295,6 @@
             const innerDiv = document.createElement('div');
             innerDiv.className = `msg-bubble ${isOut ? 'msg-outgoing' : 'msg-incoming'}`;
 
-            // Sender name (for incoming)
             if (!isOut && msg.senderName) {
                 const nameDiv = document.createElement('div');
                 nameDiv.className = 'text-xs font-semibold text-[#16a34a] mb-1';
@@ -333,7 +322,6 @@
             bubbleDiv.appendChild(innerDiv);
             chatContainer.appendChild(bubbleDiv);
 
-            // Scroll to bottom
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
@@ -347,12 +335,11 @@
             const messageData = {
                 text: text,
                 senderId: currentUser.uid,
-                senderName: currentUser.displayName || currentUser.phoneNumber || 'User',
+                senderName: currentUser.displayName || currentUser.phoneNumber || currentUser.email || 'User',
                 timestamp: firebase.database.ServerValue.TIMESTAMP,
                 time: timeStr
             };
 
-            // Push to database - the child_added listener will render it
             database.ref('messages').push(messageData)
                 .catch((error) => {
                     console.error('Error sending message:', error);
@@ -373,7 +360,7 @@
         });
 
         // ============================================================
-        // SERVICE WORKER REGISTRATION (for PWA installability)
+        // SERVICE WORKER REGISTRATION (PWA installability)
         // ============================================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -382,17 +369,6 @@
                     .catch(err => console.log('SW registration failed:', err));
             });
         }
-
-        // ============================================================
-        // PWA INSTALL PROMPT (optional enhancement)
-        // ============================================================
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            // You could show a custom install button here
-        });
-
     </script>
 </body>
 </html>
