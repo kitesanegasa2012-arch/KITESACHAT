@@ -5,891 +5,394 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kitchat - Appii Qunnamtii Real-time</title>
 
-    <!-- Web App Manifest with High Quality Embedded PNG Data Icon -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Kitchat","short_name":"Kitchat","description":"Kitchat Realtime Messenger by Kitesa Negasa","start_url":".","display":"standalone","background_color":"%2316a34a","theme_color":"%2316a34a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22100%22 fill=%22%2316a34a%22/><circle cx=%22256%22 cy=%22256%22 r=%22200%22 fill=%22%2315803d%22 opacity=%220.3%22/><path d=%22M256 390c-8 0-16-3-22-9-58-59-114-110-114-165 0-44 35-80 79-80 26 0 49 13 63 34 14-21 37-34 63-34 44 0 79 36 79 80 0 55-56 106-114 165-6 6-14 9-22 9z%22 fill=%22%23ffffff%22/></svg>","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'>
-    
-    <meta name="theme-color" content="#16a34a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Kitchat">
-    
-    <!-- Standard Favicons -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%2316a34a'/><path d='M256 390c-8 0-16-3-22-9-58-59-114-110-114-165 0-44 35-80 79-80 26 0 49 13 63 34 14-21 37-34 63-34 44 0 79 36 79 80 0 55-56 106-114 165-6 6-14 9-22 9z' fill='%23ffffff'/></svg>">
+    <!-- Manifest sirreessee: Icon PNG 192 fi 512 of keessatti qabata -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Kitchat","short_name":"Kitchat","description":"Kitchat Realtime Messenger","start_url":"./","display":"standalone","background_color":"%2316a34a","theme_color":"%2316a34a","icons":[{"src":"https://ui-avatars.com/api/?name=K&background=16a34a&color=fff&size=192","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"https://ui-avatars.com/api/?name=K&background=16a34a&color=fff&size=512","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
 
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs (v9 compat mode for simplicity) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
     <style>
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
-        .h-screen-safe { height: 100vh; height: 100dvh; }
+        * { font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #f0f7f0; height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; }
+        .app-container { height: 100vh; width: 100%; max-width: 420px; background: #ffffff; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 10px; }
+        .chat-messages { scrollbar-width: thin; scrollbar-color: #cbd5e0 #f7fafc; }
+        .msg-bubble { max-width: 80%; padding: 10px 16px; border-radius: 24px; font-size: 0.95rem; line-height: 1.4; word-break: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+        .msg-outgoing { background: #16a34a; color: white; border-bottom-right-radius: 6px; margin-left: auto; }
+        .msg-incoming { background: #f1f5f9; color: #0f172a; border-bottom-left-radius: 6px; margin-right: auto; }
+        .msg-meta { font-size: 0.65rem; opacity: 0.7; margin-top: 4px; display: flex; justify-content: flex-end; gap: 6px; }
+        .msg-outgoing .msg-meta { color: rgba(255,255,255,0.8); }
+        .msg-incoming .msg-meta { color: #64748b; }
+        .fade-enter { animation: fadeSlide 0.2s ease-out; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .screen { display: none; flex-direction: column; height: 100%; }
+        .screen.active { display: flex; }
     </style>
 </head>
-<body class="h-screen-safe bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans antialiased overflow-hidden transition-colors duration-200">
+<body class="h-full light">
+    <div class="app-container">
+        
+        <!-- ================= LOGIN SCREEN ================= -->
+        <div id="loginScreen" class="screen active px-6 py-10 justify-center items-center bg-white">
+            <div class="w-20 h-20 rounded-3xl bg-[#16a34a] flex items-center justify-center text-white text-4xl mb-6 shadow-lg">
+                <i class="fas fa-comment-dots"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Baga nagaan dhuftan Kitchat</h1>
+            <p class="text-gray-500 text-sm mb-8 text-center">Qunnamtii real-time, saffisaa fi salphaa.</p>
 
-    <!-- PWA INSTALL BANNER -->
-    <div id="installBanner" class="hidden fixed top-0 inset-x-0 z-50 bg-brand-600 text-white px-4 py-2.5 flex items-center justify-between shadow-lg">
-        <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-                <i data-lucide="heart" class="w-5 h-5 text-white fill-white"></i>
+            <!-- Phone Auth -->
+            <div class="w-full mb-4">
+                <label class="block text-gray-600 text-sm font-medium mb-1">Lakkoofsa Bilbilaa</label>
+                <div class="flex gap-2">
+                    <input id="phoneNumber" type="tel" placeholder="+251911234567" class="flex-1 bg-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#16a34a]/30 border border-transparent focus:border-[#16a34a]/30">
+                    <button id="sendOtpBtn" class="bg-[#16a34a] text-white px-4 rounded-xl text-sm font-medium hover:bg-[#15803d] transition">Ergi</button>
+                </div>
             </div>
-            <div>
-                <p class="text-xs font-bold leading-tight">Kitchat Mobile App</p>
-                <p class="text-[10px] text-brand-100">Bilbila keessan irratti fe'aadhaa (Install)!</p>
+
+            <!-- OTP Verification -->
+            <div id="otpSection" class="w-full mb-4 hidden">
+                <label class="block text-gray-600 text-sm font-medium mb-1">Koodii Mirkaneessaa (OTP)</label>
+                <div class="flex gap-2">
+                    <input id="otpCode" type="text" placeholder="123456" class="flex-1 bg-gray-100 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#16a34a]/30 border border-transparent focus:border-[#16a34a]/30">
+                    <button id="verifyOtpBtn" class="bg-[#16a34a] text-white px-4 rounded-xl text-sm font-medium hover:bg-[#15803d] transition">Mirkaneessi</button>
+                </div>
+                <div id="recaptcha-container" class="mt-2"></div>
             </div>
-        </div>
-        <div class="flex items-center space-x-2">
-            <button onclick="installPWA()" class="bg-white text-brand-700 font-bold px-3 py-1 text-xs rounded-lg shadow hover:bg-brand-50 active:scale-95 transition-all">
-                Fe'i (Install)
+
+            <div class="flex items-center w-full my-4">
+                <div class="flex-1 h-px bg-gray-200"></div>
+                <span class="px-3 text-gray-400 text-xs">ykn</span>
+                <div class="flex-1 h-px bg-gray-200"></div>
+            </div>
+
+            <!-- Google Sign-In -->
+            <button id="googleSignInBtn" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+                <i class="fab fa-google text-red-500"></i> Gmail fayyadamuun seeni
             </button>
-            <button onclick="document.getElementById('installBanner').classList.add('hidden')" class="text-brand-200 hover:text-white p-1">
-                <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
+
+            <p class="text-xs text-gray-400 mt-8 text-center">Kitchat Realtime Messenger by Kitesa Negasa</p>
         </div>
-    </div>
 
-    <!-- ADD FRIEND MODAL -->
-    <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-2xl p-5 shadow-2xl border border-gray-200 dark:border-gray-700">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                    <i data-lucide="user-plus" class="w-5 h-5 text-brand-600"></i>
-                    <span>Hiriyaa Dabali (Add Friend)</span>
-                </h3>
-                <button onclick="toggleAddFriendModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <form onsubmit="handleAddFriendSubmit(event)" class="space-y-3">
-                <div>
-                    <label class="text-xs text-gray-500 dark:text-gray-400">Gmail ama Maqaa Hiriyaa</label>
-                    <input type="text" id="friendSearchInput" required placeholder="fkn: galataa@gmail.com" class="w-full mt-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
-                </div>
-                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl shadow transition-all flex items-center justify-center space-x-2 text-sm">
-                    <i data-lucide="user-check" class="w-4 h-4"></i>
-                    <span>Akkasumas Hiriyaa Ta'i</span>
-                </button>
-            </form>
-
-            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
-                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Gara Kitchat Hiriyootatti Ergi (Share App):</p>
-                <button onclick="shareAppWithFriend()" class="w-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold py-2 rounded-xl text-xs flex items-center justify-center space-x-2 border border-emerald-300 dark:border-emerald-800">
-                    <i data-lucide="share-2" class="w-4 h-4"></i>
-                    <span>Geessituu (Link) Appii Ergi / Share</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- AUTHENTICATION & VERIFICATION MODAL -->
-    <div id="authScreen" class="fixed inset-0 z-50 bg-gray-900/85 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-gray-700 text-center relative overflow-hidden">
-            
-            <div class="w-20 h-20 bg-gradient-to-tr from-brand-600 to-emerald-500 rounded-3xl mx-auto flex items-center justify-center text-white shadow-xl mb-3 relative group">
-                <i data-lucide="heart" class="w-10 h-10 text-white fill-white"></i>
-            </div>
-            <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Kitchat</h2>
-            <p class="text-[11px] font-semibold text-brand-600 dark:text-brand-400 uppercase tracking-widest mb-4">KALAQA: KITESA NEGASA</p>
-
-            <!-- STEP 1: EMAIL & USERNAME -->
-            <div id="loginStep1">
-                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-5">
-                    Maqaa keessan, Gmail fi jecha darbi (password) galchaa. Koodiin mirkaneessaa (4-digit) Gmail keessan irratti ergama.
-                </p>
-
-                <form onsubmit="handleInitialLogin(event)" class="space-y-3">
-                    <div class="text-left">
-                        <label class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 ml-1">Maqaa Keessan</label>
-                        <div class="relative">
-                            <i data-lucide="user" class="w-4 h-4 absolute left-3 top-3.5 text-gray-400"></i>
-                            <input type="text" id="userNameInput" value="Kitesa Negasa" required class="w-full pl-9 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
-                        </div>
-                    </div>
-
-                    <div class="text-left">
-                        <label class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 ml-1">Gmail Keessan</label>
-                        <div class="relative">
-                            <i data-lucide="mail" class="w-4 h-4 absolute left-3 top-3.5 text-gray-400"></i>
-                            <input type="email" id="userEmailInput" value="kitesanegasa2012@gmail.com" required class="w-full pl-9 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
-                        </div>
-                    </div>
-
-                    <div class="text-left">
-                        <label class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 ml-1">Jecha Darbi (Password Gmail)</label>
-                        <div class="relative">
-                            <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-3.5 text-gray-400"></i>
-                            <input type="password" id="userPasswordInput" placeholder="••••••••" required class="w-full pl-9 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition-all active:scale-98 flex items-center justify-center space-x-2 mt-2">
-                        <span>Koodii Mirkaneessaa Gmail Irratti Ergi</span>
-                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </button>
-                </form>
-            </div>
-
-            <!-- STEP 2: 4-DIGIT VERIFICATION CODE -->
-            <div id="loginStep2" class="hidden">
-                <div class="bg-brand-50 dark:bg-brand-900/30 p-3 rounded-2xl border border-brand-200 dark:border-brand-700/50 mb-4 text-left">
-                    <p class="text-xs text-brand-800 dark:text-brand-300 font-medium">
-                        <i data-lucide="shield-check" class="w-4 h-4 inline-block mr-1 text-brand-600"></i>
-                        Koodiin digit-4 Gmail <strong id="targetEmailShow">kitesanegasa2012@gmail.com</strong> irratti ergameera.
-                    </p>
-                </div>
-
-                <p class="text-xs text-gray-600 dark:text-gray-300 mb-3">Koodii 4-digit Gmail keessan irraa fudhattan galchaa:</p>
-
-                <div class="flex justify-center space-x-3 mb-5">
-                    <input type="text" maxlength="1" class="digit-input w-12 h-12 text-center text-xl font-bold bg-gray-100 dark:bg-gray-900 border-2 border-brand-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white" oninput="focusNextDigit(this, 1)">
-                    <input type="text" maxlength="1" class="digit-input w-12 h-12 text-center text-xl font-bold bg-gray-100 dark:bg-gray-900 border-2 border-brand-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white" oninput="focusNextDigit(this, 2)">
-                    <input type="text" maxlength="1" class="digit-input w-12 h-12 text-center text-xl font-bold bg-gray-100 dark:bg-gray-900 border-2 border-brand-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white" oninput="focusNextDigit(this, 3)">
-                    <input type="text" maxlength="1" class="digit-input w-12 h-12 text-center text-xl font-bold bg-gray-100 dark:bg-gray-900 border-2 border-brand-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white" oninput="focusNextDigit(this, 4)">
-                </div>
-
-                <div id="generatedCodeAlert" class="text-[11px] text-green-600 dark:text-green-400 font-mono bg-green-50 dark:bg-green-950/40 py-2 rounded-lg mb-4 border border-green-200 dark:border-green-800">
-                    Koodii Mirkaneessaa Ergame: <strong id="showGeneratedCode" class="text-xs underline">----</strong>
-                </div>
-
-                <button onclick="verifyCodeAndLogin()" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition-all active:scale-98 flex items-center justify-center space-x-2">
-                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-                    <span>Mirkaneessi & Seeni</span>
-                </button>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- MAIN APP LAYOUT -->
-    <div class="flex h-full w-full relative overflow-hidden">
-
-        <!-- SIDEBAR CONTAINER -->
-        <aside id="sidebar" class="w-full md:w-80 lg:w-96 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full z-20 flex-shrink-0">
-            
-            <!-- HEADER & BRANDING -->
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-2xl bg-brand-600 text-white flex items-center justify-center font-bold shadow-md">
-                        <i data-lucide="heart" class="w-5 h-5 fill-white"></i>
+        <!-- ================= CHAT SCREEN ================= -->
+        <div id="chatScreen" class="screen">
+            <header class="bg-[#16a34a] px-4 py-3 flex items-center justify-between shadow-sm z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-xl">
+                        <i class="fas fa-comment-dots"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-lg tracking-tight text-gray-900 dark:text-white leading-none">Kitchat</h1>
-                        <span class="text-[9px] text-brand-600 dark:text-brand-400 font-semibold tracking-wider uppercase">Kalaqa: Kitesa Negasa</span>
+                        <h1 class="text-white font-semibold text-lg leading-tight">Kitchat</h1>
+                        <p id="userStatus" class="text-[#dcfce7] text-xs font-medium flex items-center gap-1">
+                            <span class="inline-block w-2 h-2 bg-emerald-300 rounded-full"></span>
+                            <span id="userDisplayName">Online</span>
+                        </p>
                     </div>
                 </div>
-
-                <div class="flex items-center space-x-1">
-                    <button onclick="toggleAddFriendModal()" title="Hiriyaa Dabali" class="bg-brand-50 dark:bg-brand-700/30 text-brand-600 dark:text-brand-400 p-2 rounded-xl text-xs font-semibold flex items-center space-x-1 border border-brand-200 dark:border-brand-700">
-                        <i data-lucide="user-plus" class="w-4 h-4"></i>
-                    </button>
-
-                    <button id="pwaInstallBtn" onclick="installPWA()" class="bg-brand-50 dark:bg-brand-700/30 text-brand-600 dark:text-brand-400 p-2 rounded-xl text-xs font-semibold flex items-center space-x-1 border border-brand-200 dark:border-brand-700">
-                        <i data-lucide="download" class="w-4 h-4"></i>
-                    </button>
-
-                    <button id="themeToggle" onclick="toggleTheme()" class="p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 focus:outline-none">
-                        <i data-lucide="sun" class="w-5 h-5"></i>
-                    </button>
+                <div class="flex gap-4 text-white/90 text-lg">
+                    <button id="logoutBtn" class="hover:text-white transition" title="Ba'i"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
+            </header>
+
+            <div id="chatContainer" class="flex-1 overflow-y-auto px-4 py-4 chat-messages bg-[#f8fafc] flex flex-col gap-2">
+                <!-- Messages injected here -->
             </div>
 
-            <!-- ONLINE USER COUNTER & CREATOR DASHBOARD -->
-            <div class="bg-brand-500/10 px-4 py-2 border-b border-brand-500/20 flex items-center justify-between text-xs text-brand-700 dark:text-brand-300">
-                <span class="font-medium flex items-center">
-                    <span class="w-2 h-2 rounded-full bg-green-500 inline-block mr-2 animate-pulse"></span>
-                    Sarara Irratti: <strong id="usersOnlineCount" class="ml-1 font-bold bg-brand-500 text-white px-2 py-0.5 rounded-full text-[10px]">1</strong>
-                </span>
-                <span class="text-[10px] text-gray-500 dark:text-gray-400">
-                    Ida'ama: <strong id="totalUsersRegistered" class="font-semibold text-brand-600 dark:text-brand-400">0</strong>
-                </span>
-                <button onclick="shareAppWithFriend()" class="text-[10px] font-bold bg-brand-600 text-white px-2.5 py-1 rounded-lg flex items-center space-x-1 hover:bg-brand-700">
-                    <i data-lucide="share-2" class="w-3 h-3"></i>
-                    <span>Share</span>
+            <footer class="bg-white border-t border-gray-100 px-3 py-2 flex items-center gap-2">
+                <input id="messageInput" type="text" placeholder="Fakkii... (Message)" 
+                       class="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#16a34a]/30 transition border border-transparent focus:border-[#16a34a]/30">
+                <button id="sendButton" class="w-10 h-10 rounded-full bg-[#16a34a] text-white flex items-center justify-center shadow-sm hover:bg-[#15803d] transition active:scale-95">
+                    <i class="fas fa-paper-plane text-sm"></i>
                 </button>
-            </div>
-
-            <!-- CURRENT USER PROFILE BAR -->
-            <div id="userProfileBar" class="p-3 bg-gray-50 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700 flex items-center space-x-3">
-                <div id="myAvatarContainer" class="w-9 h-9 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center flex-shrink-0 text-sm shadow">
-                    K
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center space-x-1">
-                        <h4 id="myProfileName" class="text-xs font-bold text-gray-800 dark:text-white truncate">Kitesa Negasa</h4>
-                        <span id="creatorAdminBadge" class="hidden bg-emerald-100 text-emerald-700 text-[9px] font-extrabold px-1.5 py-0.2 rounded border border-emerald-300">ADMIN</span>
-                    </div>
-                    <p id="myProfileEmail" class="text-[10px] text-gray-400 truncate">kitesanegasa2012@gmail.com</p>
-                </div>
-                <button onclick="logout()" class="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="Cufi Ba'i (Logout)">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
-                </button>
-            </div>
-
-            <!-- CHAT LIST / USER LIST CONTAINER -->
-            <div id="chatList" class="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700/50">
-                <!-- User chat items are dynamically inserted here -->
-            </div>
-        </aside>
-
-        <!-- MAIN CHAT AREA -->
-        <main id="mainChatArea" class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 relative h-full w-full">
-            
-            <div class="p-3.5 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between shadow-sm z-10">
-                <div class="flex items-center space-x-3 min-w-0">
-                    <button id="backBtn" onclick="showSidebarMobile()" class="md:hidden p-2 -ml-2 rounded-xl text-gray-600 dark:text-gray-300">
-                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                    </button>
-                    <div id="activeAvatarContainer" class="w-10 h-10 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center flex-shrink-0">
-                        #
-                    </div>
-                    <div class="min-w-0">
-                        <h2 id="activeName" class="font-bold text-gray-800 dark:text-white text-base leading-tight truncate">Mana Marii Guutuu (Global Chat)</h2>
-                        <p id="activeSubtext" class="text-xs text-green-600 dark:text-green-400 font-medium">Namoota hundumaa wajjin</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
-                    <button id="followBtn" onclick="toggleFollowUser()" class="px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 rounded-xl text-xs font-semibold hover:bg-brand-100 flex items-center space-x-1 border border-brand-200 dark:border-brand-800">
-                        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
-                        <span id="followBtnText">Hordofi</span>
-                    </button>
-                    <button onclick="unfriendCurrentActiveUser()" class="p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 rounded-xl" title="Hiriyaa Haqui (Unfriend)">
-                        <i data-lucide="user-minus" class="w-4 h-4"></i>
-                    </button>
-                    <button onclick="blockCurrentActiveUser()" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl" title="Cufi (Block User)">
-                        <i data-lucide="user-x" class="w-4 h-4"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- MESSAGES CONTAINER -->
-            <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
-                <!-- Realtime messages rendering -->
-            </div>
-
-            <!-- EXPANDED ATTACHMENT MENU -->
-            <div id="attachmentMenu" class="hidden absolute bottom-20 left-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-3 grid grid-cols-2 gap-2 z-30 w-80">
-                <button onclick="triggerFileSelect('audio', 'audio/*')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
-                    <div class="w-8 h-8 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center">
-                        <i data-lucide="music" class="w-4 h-4"></i>
-                    </div>
-                    <span>Muzikaa / Audio</span>
-                </button>
-
-                <button onclick="triggerFileSelect('app', '.apk,.zip,.rar,.7z,.exe,.dmg')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
-                    <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center">
-                        <i data-lucide="box" class="w-4 h-4"></i>
-                    </div>
-                    <span>Appii / ZIP / APK</span>
-                </button>
-
-                <button onclick="triggerFileSelect('document', '.pdf,.doc,.docx,.epub,.txt')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
-                    <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center">
-                        <i data-lucide="book-open" class="w-4 h-4"></i>
-                    </div>
-                    <span>Kitaaba / Dokumanti</span>
-                </button>
-
-                <button onclick="triggerFileSelect('image', 'image/*')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
-                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                        <i data-lucide="image" class="w-4 h-4"></i>
-                    </div>
-                    <span>Suuraa / Photo</span>
-                </button>
-
-                <button onclick="triggerFileSelect('video', 'video/*')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
-                    <div class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center">
-                        <i data-lucide="video" class="w-4 h-4"></i>
-                    </div>
-                    <span>Viidiyoo / Video</span>
-                </button>
-
-                <button onclick="triggerFileSelect('any', '*/*')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
-                    <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
-                        <i data-lucide="paperclip" class="w-4 h-4"></i>
-                    </div>
-                    <span>Ragaalee Hunda (Any)</span>
-                </button>
-            </div>
-
-            <input type="file" id="hiddenFileInput" class="hidden" onchange="handleFileUpload(event)">
-
-            <!-- INPUT FORM -->
-            <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-                <form id="messageForm" onsubmit="sendMessage(event)" class="flex items-center space-x-2">
-                    <button type="button" onclick="toggleAttachmentMenu()" class="p-2 text-gray-500 hover:text-brand-600 rounded-xl">
-                        <i data-lucide="paperclip" class="w-5 h-5"></i>
-                    </button>
-                    
-                    <input type="text" id="messageInput" placeholder="Ergaa katabi..." autocomplete="off" class="flex-1 py-2.5 px-4 bg-gray-100 dark:bg-gray-700/60 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white border border-transparent">
-                    
-                    <button type="submit" class="p-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center">
-                        <i data-lucide="send" class="w-4 h-4"></i>
-                    </button>
-                </form>
-            </div>
-        </main>
+            </footer>
+        </div>
     </div>
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="appToast" class="hidden fixed bottom-5 right-5 z-50 bg-gray-900 text-white text-xs px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-2 border border-gray-700">
-        <i data-lucide="info" class="w-4 h-4 text-brand-400"></i>
-        <span id="toastMessage">Sistemichi sirriitti hojjechaa jira.</span>
-    </div>
-
-    <!-- FIREBASE MODULES FOR REALTIME CHAT -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, updateDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kitchat-app-default';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "dummy-key",
-            authDomain: "dummy.firebaseapp.com",
-            projectId: "dummy-project",
-            storageBucket: "dummy.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
+    <script>
+        // ============================================================
+        // FIREBASE CONFIGURATION - ITTI GALCHI
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // DOM Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const chatScreen = document.getElementById('chatScreen');
+        const phoneNumberInput = document.getElementById('phoneNumber');
+        const sendOtpBtn = document.getElementById('sendOtpBtn');
+        const otpSection = document.getElementById('otpSection');
+        const otpCodeInput = document.getElementById('otpCode');
+        const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+        const googleSignInBtn = document.getElementById('googleSignInBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const chatContainer = document.getElementById('chatContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const userDisplayName = document.getElementById('userDisplayName');
 
         let currentUser = null;
-        let systemVerificationCode = "";
-        let pendingName = "Kitesa Negasa";
-        let pendingEmail = "kitesanegasa2012@gmail.com";
-        let selectedFileType = null;
-        let isFollowing = false;
+        let recaptchaVerifier = null;
+        let confirmationResult = null;
+        let messagesRef = null;
 
-        // ACTIVE CHAT STATE
-        let activeChatUser = { uid: 'global', name: 'Mana Marii Guutuu (Global Chat)', email: 'global' };
-        let allMessagesList = [];
-        let activeUsersList = [];
-
-        async function initAuth() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    const res = await signInWithCustomToken(auth, __initial_auth_token);
-                    currentUser = res.user;
-                } else {
-                    const res = await signInAnonymously(auth);
-                    currentUser = res.user;
-                }
-                listenToUsersAndMessages();
-            } catch(e) {
-                console.error("Auth error:", e);
-                renderDemoContent();
-            }
-        }
-
-        function listenToUsersAndMessages() {
-            try {
-                const usersCol = collection(db, 'artifacts', appId, 'public', 'data', 'users');
-                onSnapshot(usersCol, (snapshot) => {
-                    const usersList = [];
-                    snapshot.forEach((doc) => {
-                        usersList.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    activeUsersList = usersList.length ? usersList : getDemoUsers();
-                    const onlineCount = activeUsersList.length || 1;
-                    const onlineCounterEl = document.getElementById('usersOnlineCount');
-                    if (onlineCounterEl) {
-                        onlineCounterEl.textContent = onlineCount.toString();
-                    }
-
-                    renderUsersList(activeUsersList);
-                }, (err) => {
-                    activeUsersList = getDemoUsers();
-                    renderUsersList(activeUsersList);
-                });
-
-                const msgsCol = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
-                const q = query(msgsCol, orderBy('timestamp', 'asc'));
-                onSnapshot(q, (snapshot) => {
-                    const messages = [];
-                    snapshot.forEach((doc) => {
-                        messages.push({ id: doc.id, ...doc.data() });
-                    });
-                    allMessagesList = messages.length ? messages : getDemoMessages();
-                    filterAndRenderActiveChatMessages();
-                }, (err) => {
-                    allMessagesList = getDemoMessages();
-                    filterAndRenderActiveChatMessages();
-                });
-            } catch(err) {
-                renderDemoContent();
-            }
-        }
-
-        function getDemoUsers() {
-            return [
-                { uid: '1', name: 'Kitesa Negasa', email: 'kitesanegasa2012@gmail.com' },
-                { uid: '2', name: 'Abebe Bikila', email: 'abebe@gmail.com' },
-                { uid: '3', name: 'Chaltu Gemechu', email: 'chaltu@gmail.com' }
-            ];
-        }
-
-        function getDemoMessages() {
-            return [
-                { id: 'm1', senderId: '2', recipientId: 'global', senderName: 'Abebe Bikila', text: 'Akkam, nagaa jirtaa? Appii Kitchat baay\'ee namatti tola!', timestamp: Date.now() - 10000, type: 'text', likes: 1 },
-                { id: 'm2', senderId: currentUser?.uid || '1', recipientId: 'global', senderName: pendingName, text: 'Baga nagaan dhuftan! Dokumentoota fi sagalee erguu dandeessu.', timestamp: Date.now() - 5000, type: 'text', likes: 2 }
-            ];
-        }
-
-        function renderDemoContent() {
-            activeUsersList = getDemoUsers();
-            allMessagesList = getDemoMessages();
-            renderUsersList(activeUsersList);
-            filterAndRenderActiveChatMessages();
-        }
-
-        window.selectChatTarget = function(user) {
-            activeChatUser = user;
-            document.getElementById('activeName').textContent = user.name;
-            document.getElementById('activeSubtext').textContent = user.uid === 'global' ? 'Namoota hundumaa wajjin' : user.email;
-            
-            const avatarContainer = document.getElementById('activeAvatarContainer');
-            if (user.uid === 'global') {
-                avatarContainer.textContent = '#';
-                avatarContainer.className = "w-10 h-10 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center flex-shrink-0";
-            } else {
-                avatarContainer.textContent = (user.name || 'U').charAt(0).toUpperCase();
-                avatarContainer.className = "w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center flex-shrink-0";
-            }
-
-            // Close mobile sidebar if open
-            if (window.innerWidth < 768) {
-                document.getElementById('sidebar').classList.add('hidden');
-            }
-
-            filterAndRenderActiveChatMessages();
-        };
-
-        function filterAndRenderActiveChatMessages() {
-            let filtered = [];
-            if (activeChatUser.uid === 'global') {
-                filtered = allMessagesList.filter(m => !m.recipientId || m.recipientId === 'global');
-            } else {
-                const myUid = currentUser?.uid || '1';
-                filtered = allMessagesList.filter(m => 
-                    (m.senderId === myUid && m.recipientId === activeChatUser.uid) ||
-                    (m.senderId === activeChatUser.uid && m.recipientId === myUid)
-                );
-            }
-            renderMessagesUI(filtered);
-        }
-
-        window.focusNextDigit = function(element, index) {
-            if (element.value.length === 1 && index < 4) {
-                const inputs = document.querySelectorAll('.digit-input');
-                if (inputs[index]) inputs[index].focus();
-            }
-        };
-
-        window.handleInitialLogin = function(e) {
-            e.preventDefault();
-            pendingName = document.getElementById('userNameInput').value.trim();
-            pendingEmail = document.getElementById('userEmailInput').value.trim();
-
-            if (!pendingName || !pendingEmail) return;
-
-            systemVerificationCode = Math.floor(1000 + Math.random() * 9000).toString();
-            document.getElementById('showGeneratedCode').textContent = systemVerificationCode;
-            document.getElementById('targetEmailShow').textContent = pendingEmail;
-            document.getElementById('loginStep1').classList.add('hidden');
-            document.getElementById('loginStep2').classList.remove('hidden');
-
-            showAppToast(`Koodiin 4-digit Gmail (${pendingEmail}) irratti ergameera!`);
-        };
-
-        window.verifyCodeAndLogin = async function() {
-            const inputs = document.querySelectorAll('.digit-input');
-            let enteredCode = "";
-            inputs.forEach(inp => enteredCode += inp.value);
-
-            if (enteredCode === systemVerificationCode || enteredCode === "1234") {
-                document.getElementById('authScreen').classList.add('hidden');
-
-                if (currentUser) {
-                    try {
-                        const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid);
-                        await setDoc(userRef, {
-                            uid: currentUser.uid,
-                            name: pendingName,
-                            email: pendingEmail,
-                            status: 'online',
-                            lastSeen: serverTimestamp()
-                        }, { merge: true });
-                    } catch(e) { console.log(e); }
-                }
-
-                document.getElementById('myProfileName').textContent = pendingName;
-                document.getElementById('myProfileEmail').textContent = pendingEmail;
-                document.getElementById('myAvatarContainer').textContent = pendingName.charAt(0).toUpperCase();
-
-                if (pendingEmail.toLowerCase() === 'kitesanegasa2012@gmail.com') {
-                    document.getElementById('creatorAdminBadge').classList.remove('hidden');
-                }
-
-                showAppToast("Baga Kitchat irratti nagaan dhufte!");
-            } else {
-                showAppToast("Koodiin dogoggora, irra deebi'ii galchi!");
-            }
-        };
-
-        window.handleAddFriendSubmit = async function(e) {
-            e.preventDefault();
-            const friendQuery = document.getElementById('friendSearchInput').value.trim();
-            if (friendQuery) {
-                const newFriendObj = {
-                    uid: 'user_' + Date.now(),
-                    name: friendQuery.split('@')[0],
-                    email: friendQuery.includes('@') ? friendQuery : `${friendQuery.toLowerCase().replace(/\s+/g, '')}@gmail.com`
-                };
-
-                activeUsersList.push(newFriendObj);
-                renderUsersList(activeUsersList);
-
-                try {
-                    const newRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', newFriendObj.uid);
-                    await setDoc(newRef, {
-                        uid: newFriendObj.uid,
-                        name: newFriendObj.name,
-                        email: newFriendObj.email,
-                        status: 'online'
-                    });
-                } catch(err){}
-
-                showAppToast(`Hiriyaan (${newFriendObj.name}) tarree keessanitti dabalameera!`);
-                toggleAddFriendModal();
-                document.getElementById('friendSearchInput').value = '';
-
-                // Automatically switch chat to the newly added friend
-                selectChatTarget(newFriendObj);
-            }
-        };
-
-        window.unfriendCurrentActiveUser = function() {
-            showAppToast("Hiriyaan tarree irraa haqameera (Unfriended).");
-        };
-
-        window.blockCurrentActiveUser = function() {
-            showAppToast("Fayyadamaan cufameera (User Blocked).");
-        };
-
-        function renderUsersList(users) {
-            const list = document.getElementById('chatList');
-            if (!list) return;
-
-            list.innerHTML = '';
-
-            const totalUsersEl = document.getElementById('totalUsersRegistered');
-            if (totalUsersEl) {
-                totalUsersEl.textContent = users.length;
-            }
-
-            // Global Chat Option first
-            const globalDiv = document.createElement('div');
-            globalDiv.className = `p-3 flex items-center space-x-3 cursor-pointer transition-colors ${activeChatUser.uid === 'global' ? 'bg-brand-50 dark:bg-brand-900/30 border-l-4 border-brand-600' : 'hover:bg-gray-100 dark:hover:bg-gray-700/50'}`;
-            globalDiv.onclick = () => selectChatTarget({ uid: 'global', name: 'Mana Marii Guutuu (Global Chat)', email: 'global' });
-            globalDiv.innerHTML = `
-                <div class="w-10 h-10 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center flex-shrink-0">
-                    #
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h3 class="font-bold text-sm text-gray-800 dark:text-white truncate">Mana Marii Guutuu</h3>
-                    <p class="text-xs text-brand-600 dark:text-brand-400 font-medium">Namoota hundumaa wajjin</p>
-                </div>
-            `;
-            list.appendChild(globalDiv);
-
-            users.forEach(u => {
-                const isMe = u.uid === currentUser?.uid;
-                const isSelected = activeChatUser.uid === u.uid;
-
-                const div = document.createElement('div');
-                div.className = `p-3 flex items-center space-x-3 cursor-pointer transition-colors ${isSelected ? 'bg-indigo-50 dark:bg-indigo-950/40 border-l-4 border-indigo-600' : 'hover:bg-gray-100 dark:hover:bg-gray-700/50'}`;
-                div.onclick = () => selectChatTarget(u);
+        // ============================================================
+        // AUTH STATE LISTENER
+        // ============================================================
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loginScreen.classList.remove('active');
+                chatScreen.classList.add('active');
                 
-                div.innerHTML = `
-                    <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center flex-shrink-0 relative">
-                        ${(u.name || 'U').charAt(0).toUpperCase()}
-                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-baseline">
-                            <h3 class="font-semibold text-sm text-gray-800 dark:text-white truncate">${u.name || 'Fayyadamaa'} ${isMe ? '(Ati)' : ''}</h3>
-                            <span class="text-[10px] text-green-500 font-bold">● Live</span>
-                        </div>
-                        <p class="text-xs text-gray-400 truncate">${u.email || ''}</p>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
+                // Display user name or phone
+                if (user.displayName) {
+                    userDisplayName.textContent = user.displayName;
+                } else if (user.phoneNumber) {
+                    userDisplayName.textContent = user.phoneNumber;
+                } else {
+                    userDisplayName.textContent = user.email || 'User';
+                }
+
+                // Load messages
+                loadMessages();
+            } else {
+                currentUser = null;
+                loginScreen.classList.add('active');
+                chatScreen.classList.remove('active');
+                chatContainer.innerHTML = '';
+                if (messagesRef) {
+                    messagesRef.off();
+                    messagesRef = null;
+                }
+            }
+        });
+
+        // ============================================================
+        // PHONE AUTHENTICATION
+        // ============================================================
+        
+        // Initialize Recaptcha (invisible)
+        function initRecaptcha() {
+            if (!recaptchaVerifier) {
+                recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': (response) => {
+                        // reCAPTCHA solved
+                    }
+                });
+                recaptchaVerifier.render();
+            }
         }
 
-        function renderMessagesUI(messages) {
-            const container = document.getElementById('messagesContainer');
-            container.innerHTML = '';
-
-            if (messages.length === 0) {
-                container.innerHTML = `
-                    <div class="h-full flex flex-col items-center justify-center text-center p-6 text-gray-400">
-                        <i data-lucide="message-circle" class="w-12 h-12 mb-2 text-gray-300 dark:text-gray-600"></i>
-                        <p class="text-sm font-semibold">Ergaa hin qabu.</p>
-                        <p class="text-xs">Haasaa keessan jalqabuuf ergaa katabaa!</p>
-                    </div>
-                `;
-                if (window.lucide) lucide.createIcons();
+        sendOtpBtn.addEventListener('click', async () => {
+            const phoneNumber = phoneNumberInput.value.trim();
+            if (!phoneNumber) {
+                alert('Maaloo lakkoofsa bilbilaa galchi.');
                 return;
             }
 
-            messages.forEach(msg => {
-                const isMe = msg.senderId === (currentUser?.uid || '1');
-                const wrapper = document.createElement('div');
-                wrapper.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
-
-                let statusBadge = isMe ? `<span class="text-green-300 font-bold text-xs ml-1" title="Ergameera">✓✓</span>` : '';
-
-                let content = `<p class="text-sm leading-relaxed">${msg.text || ''}</p>`;
-                
-                if (msg.type === 'image') {
-                    content = `<img src="${msg.fileUrl}" class="max-w-xs rounded-xl shadow my-1">`;
-                } else if (msg.type === 'audio') {
-                    content = `<audio controls src="${msg.fileUrl}" class="max-w-xs my-1 w-full"></audio>`;
-                } else if (msg.type === 'video') {
-                    content = `<video controls src="${msg.fileUrl}" class="max-w-xs rounded-xl shadow my-1"></video>`;
-                } else if (msg.type === 'app' || msg.type === 'zip' || msg.type === 'document' || msg.type === 'any') {
-                    content = `
-                        <div class="bg-gray-100 dark:bg-gray-700/80 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center space-x-3 my-1">
-                            <div class="w-10 h-10 rounded-lg bg-brand-600 text-white flex items-center justify-center flex-shrink-0">
-                                <i data-lucide="file-archive" class="w-5 h-5"></i>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="text-xs font-bold truncate text-gray-800 dark:text-white">${msg.fileName || 'Faayila Ergame'}</p>
-                                <p class="text-[10px] text-gray-500 dark:text-gray-300">${msg.fileSize || 'Ragaa / App / ZIP'}</p>
-                            </div>
-                            <a href="${msg.fileUrl}" download="${msg.fileName || 'faayila'}" class="p-2 bg-brand-600 text-white rounded-lg shadow hover:bg-brand-700">
-                                <i data-lucide="download" class="w-4 h-4"></i>
-                            </a>
-                        </div>
-                    `;
-                }
-
-                const likesCount = msg.likes || 0;
-                const commentsCount = (msg.comments && msg.comments.length) || 0;
-
-                wrapper.innerHTML = `
-                    <div class="max-w-[85%] sm:max-w-md p-3 rounded-2xl ${isMe ? 'bg-brand-600 text-white rounded-br-none shadow-md' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-none border border-gray-100 dark:border-gray-700 shadow-sm'}">
-                        <div class="flex items-center justify-between space-x-2 mb-1">
-                            <span class="text-[10px] font-bold ${isMe ? 'text-brand-100' : 'text-brand-600'}">${msg.senderName || 'Anonymous'}</span>
-                            ${statusBadge}
-                        </div>
-                        ${content}
-                        
-                        <div class="mt-2.5 pt-2 border-t ${isMe ? 'border-brand-500/40' : 'border-gray-100 dark:border-gray-700'} flex items-center justify-between text-[11px]">
-                            <button onclick="likeMessage('${msg.id}', ${likesCount})" class="flex items-center space-x-1 hover:opacity-80 transition-opacity">
-                                <i data-lucide="heart" class="w-3.5 h-3.5 ${likesCount > 0 ? 'fill-red-500 text-red-500' : ''}"></i>
-                                <span>${likesCount} Jaalladhu</span>
-                            </button>
-                            
-                            <button onclick="addCommentPrompt('${msg.id}')" class="flex items-center space-x-1 hover:opacity-80 transition-opacity">
-                                <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
-                                <span>${commentsCount} Yaada</span>
-                            </button>
-
-                            <button onclick="replyToMessage('${msg.senderName}')" class="flex items-center space-x-1 hover:opacity-80 transition-opacity">
-                                <i data-lucide="corner-up-left" class="w-3.5 h-3.5"></i>
-                                <span>Deebisii</span>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(wrapper);
-            });
-
-            container.scrollTop = container.scrollHeight;
-            if (window.lucide) lucide.createIcons();
-        }
-
-        window.sendMessage = async function(e) {
-            e.preventDefault();
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-
-            if (!text) return;
-
-            input.value = '';
-            const newMsg = {
-                text: text,
-                senderId: currentUser?.uid || '1',
-                recipientId: activeChatUser.uid,
-                senderName: pendingName || 'Kitesa Negasa',
-                timestamp: Date.now(),
-                type: 'text',
-                status: 'delivered',
-                likes: 0,
-                comments: []
-            };
+            initRecaptcha();
 
             try {
-                const msgsCol = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
-                await addDoc(msgsCol, newMsg);
-            } catch(e) {
-                allMessagesList.push(newMsg);
-                filterAndRenderActiveChatMessages();
-            }
-        };
-
-        window.likeMessage = function(msgId, currentLikes) {
-            showAppToast("Jaallatameera (Liked)!");
-        };
-
-        window.addCommentPrompt = function(msgId) {
-            const commentText = prompt("Yaada keessan galchaa (Add comment):");
-            if (commentText) {
-                showAppToast("Yaadni keessan dhihaateera!");
-            }
-        };
-
-        window.replyToMessage = function(senderName) {
-            const input = document.getElementById('messageInput');
-            input.value = `@${senderName} `;
-            input.focus();
-        };
-
-        window.toggleAttachmentMenu = function() {
-            document.getElementById('attachmentMenu').classList.toggle('hidden');
-        };
-
-        window.triggerFileSelect = function(type, acceptTypes) {
-            selectedFileType = type;
-            const input = document.getElementById('hiddenFileInput');
-            input.accept = acceptTypes;
-            input.click();
-            toggleAttachmentMenu();
-        };
-
-        window.handleFileUpload = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async function(evt) {
-                const fileUrl = evt.target.result;
-                const sizeInMB = (file.size / (1024 * 1024)).toFixed(2) + " MB";
-
-                const fileMsg = {
-                    text: `[Faayila: ${file.name}]`,
-                    fileUrl: fileUrl,
-                    fileName: file.name,
-                    fileSize: sizeInMB,
-                    senderId: currentUser?.uid || '1',
-                    recipientId: activeChatUser.uid,
-                    senderName: pendingName || 'Kitesa Negasa',
-                    timestamp: Date.now(),
-                    type: selectedFileType || 'any',
-                    status: 'delivered',
-                    likes: 0,
-                    comments: []
-                };
-
-                try {
-                    const msgsCol = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
-                    await addDoc(msgsCol, fileMsg);
-                    showAppToast(`Faayilli (${file.name}) ergameera!`);
-                } catch(err) {
-                    allMessagesList.push(fileMsg);
-                    filterAndRenderActiveChatMessages();
-                    showAppToast(`Faayilli (${file.name}) qophaa'eera!`);
+                sendOtpBtn.disabled = true;
+                sendOtpBtn.textContent = 'Ergaa jira...';
+                
+                confirmationResult = await auth.signInWithPhoneNumber(phoneNumber, recaptchaVerifier);
+                
+                otpSection.classList.remove('hidden');
+                sendOtpBtn.textContent = 'Ergi';
+                sendOtpBtn.disabled = false;
+                alert('Koodiin mirkaneessaa ergameera. Bilbila kee ilaali.');
+            } catch (error) {
+                console.error('Phone auth error:', error);
+                alert('Dogoggora: ' + error.message);
+                sendOtpBtn.textContent = 'Ergi';
+                sendOtpBtn.disabled = false;
+                if (recaptchaVerifier) {
+                    recaptchaVerifier.clear();
+                    recaptchaVerifier = null;
                 }
+            }
+        });
+
+        verifyOtpBtn.addEventListener('click', async () => {
+            const code = otpCodeInput.value.trim();
+            if (!code || !confirmationResult) {
+                alert('Maaloo koodii mirkaneessaa galchi.');
+                return;
+            }
+
+            try {
+                verifyOtpBtn.disabled = true;
+                verifyOtpBtn.textContent = 'Mirkaneessaa jira...';
+                await confirmationResult.confirm(code);
+                // Auth state listener will handle UI switch
+            } catch (error) {
+                console.error('OTP verification error:', error);
+                alert('Koodiin dogoggoraa dha. Irra deebi\'ii yaali.');
+                verifyOtpBtn.textContent = 'Mirkaneessi';
+                verifyOtpBtn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        // GOOGLE SIGN-IN
+        // ============================================================
+        googleSignInBtn.addEventListener('click', async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await auth.signInWithPopup(provider);
+                // Auth state listener handles redirect
+            } catch (error) {
+                console.error('Google sign-in error:', error);
+                alert('Dogoggora seenuu Gmail: ' + error.message);
+            }
+        });
+
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut();
+        });
+
+        // ============================================================
+        // REALTIME DATABASE - MESSAGES
+        // ============================================================
+        function loadMessages() {
+            if (messagesRef) messagesRef.off();
+            
+            messagesRef = database.ref('messages');
+            
+            // Listen for new messages (limit last 100)
+            messagesRef.limitToLast(100).on('child_added', (snapshot) => {
+                const msg = snapshot.val();
+                const msgId = snapshot.key;
+                
+                // Skip if message is from current user (already displayed optimistically? No, we'll use this for all)
+                renderMessage(msg, msgId);
+            });
+        }
+
+        function renderMessage(msg, msgId) {
+            // Avoid duplicate rendering
+            if (document.querySelector(`[data-msg-id="${msgId}"]`)) return;
+            
+            const isOut = msg.senderId === currentUser.uid;
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = `flex ${isOut ? 'justify-end' : 'justify-start'} fade-enter`;
+            bubbleDiv.setAttribute('data-msg-id', msgId);
+
+            const innerDiv = document.createElement('div');
+            innerDiv.className = `msg-bubble ${isOut ? 'msg-outgoing' : 'msg-incoming'}`;
+
+            // Sender name (for incoming)
+            if (!isOut && msg.senderName) {
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'text-xs font-semibold text-[#16a34a] mb-1';
+                nameDiv.textContent = msg.senderName;
+                innerDiv.appendChild(nameDiv);
+            }
+
+            const textSpan = document.createElement('div');
+            textSpan.textContent = msg.text;
+            innerDiv.appendChild(textSpan);
+
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'msg-meta';
+            const timeSpan = document.createElement('span');
+            timeSpan.textContent = msg.time || new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            metaDiv.appendChild(timeSpan);
+
+            if (isOut) {
+                const statusSpan = document.createElement('span');
+                statusSpan.innerHTML = '<i class="fas fa-check-double text-[10px]"></i>';
+                metaDiv.appendChild(statusSpan);
+            }
+
+            innerDiv.appendChild(metaDiv);
+            bubbleDiv.appendChild(innerDiv);
+            chatContainer.appendChild(bubbleDiv);
+
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (text === '' || !currentUser) return;
+
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const messageData = {
+                text: text,
+                senderId: currentUser.uid,
+                senderName: currentUser.displayName || currentUser.phoneNumber || 'User',
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                time: timeStr
             };
-            reader.readAsDataURL(file);
-        };
 
-        window.shareAppWithFriend = function() {
-            const currentUrl = window.location.href;
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(currentUrl);
-            } else {
-                const dummy = document.createElement('input');
-                document.body.appendChild(dummy);
-                dummy.value = currentUrl;
-                dummy.select();
-                document.execCommand('copy');
-                document.body.removeChild(dummy);
+            // Push to database - the child_added listener will render it
+            database.ref('messages').push(messageData)
+                .catch((error) => {
+                    console.error('Error sending message:', error);
+                    alert('Dogoggora ergaa erguu: ' + error.message);
+                });
+
+            messageInput.value = '';
+            messageInput.focus();
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
             }
-            showAppToast("Geessituun (Link) appii kooppii ta'eera! Hiriyoota keessaniif ergaa!");
-        };
+        });
 
-        window.toggleAddFriendModal = function() {
-            document.getElementById('addFriendModal').classList.toggle('hidden');
-        };
+        // ============================================================
+        // SERVICE WORKER REGISTRATION (for PWA installability)
+        // ============================================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('data:text/javascript,self.addEventListener("fetch",()=>{})')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed:', err));
+            });
+        }
 
-        window.toggleFollowUser = function() {
-            isFollowing = !isFollowing;
-            const followBtnText = document.getElementById('followBtnText');
-            if (isFollowing) {
-                followBtnText.textContent = "Hordofaa Jirta";
-                showAppToast("Hiriyaa kana hordofaa jirta!");
-            } else {
-                followBtnText.textContent = "Hordofi";
-            }
-        };
+        // ============================================================
+        // PWA INSTALL PROMPT (optional enhancement)
+        // ============================================================
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // You could show a custom install button here
+        });
 
-        window.showAppToast = function(msg) {
-            const toast = document.getElementById('appToast');
-            document.getElementById('toastMessage').textContent = msg;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3500);
-        };
-
-        window.showSidebarMobile = function() {
-            document.getElementById('sidebar').classList.toggle('hidden');
-        };
-
-        window.toggleTheme = function() {
-            document.documentElement.classList.toggle('dark');
-        };
-
-        window.logout = function() {
-            document.getElementById('authScreen').classList.remove('hidden');
-            document.getElementById('loginStep1').classList.remove('hidden');
-            document.getElementById('loginStep2').classList.add('hidden');
-        };
-
-        window.installPWA = function() {
-            showAppToast("Chrome Menu (⋮) -> 'Add to Home screen' filadhaa!");
-        };
-
-        window.onload = () => {
-            initAuth();
-            if (window.lucide) lucide.createIcons();
-        };
     </script>
 </body>
 </html>
