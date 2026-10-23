@@ -9,11 +9,11 @@
     <meta name="apple-mobile-web-app-title" content="Kitchat">
     <title>Kitchat - Telegram Clone</title>
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%2316a34a'/%3E%3Cpath d='M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z' fill='white'/%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%2316a34a'/%3E%3Cpath d='M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z' fill='white'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%2316a34a'/%3E%3Cpath d='M256 90c-82 0-148 55-148 123 0 32 17 61 45 83l-20 73 81-30c18 8 38 12 60 12 82 0 148-55 148-123S338 90 256 90zm-70 184h140v24H186v-24zm0-40h140v24H186v-24zm0-40h112v24H186v-24z' fill='white'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%2316a34a'/%3E%3Cpath d='M256 90c-82 0-148 55-148 123 0 32 17 61 45 83l-20 73 81-30c18 8 38 12 60 12 82 0 148-55 148-123S338 90 256 90zm-70 184h140v24H186v-24zm0-40h140v24H186v-24zm0-40h112v24H186v-24z' fill='white'/%3E%3C/svg%3E">
 
     <!-- MANIFEST: Icoonii Onnee Magariisaa fi Adii -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Kitchat","short_name":"Kitchat","description":"Realtime Messenger","start_url":"./","display":"standalone","background_color":"%2316a34a","theme_color":"%2316a34a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%2316a34a%22/><path d=%22M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z%22 fill=%22white%22/></svg>","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"},{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%2316a34a%22/><path d=%22M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z%22 fill=%22white%22/></svg>","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'>
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Kitchat","short_name":"Kitchat","description":"Realtime Messenger","start_url":"./","display":"standalone","background_color":"%2322c55e","theme_color":"%2316a34a","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%2316a34a'/%3E%3Cpath d='M256 90c-82 0-148 55-148 123 0 32 17 61 45 83l-20 73 81-30c18 8 38 12 60 12 82 0 148-55 148-123S338 90 256 90zm-70 184h140v24H186v-24zm0-40h140v24H186v-24zm0-40h112v24H186v-24z' fill='white'/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -41,6 +41,17 @@
         .msg-incoming { background: #ffffff; color: #000; border-bottom-left-radius: 4px; margin-right: auto; }
         .msg-time { font-size: 0.65rem; color: #888; float: right; margin-left: 8px; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
 
+        .empty-chat-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            min-height: 140px;
+            padding: 1rem;
+        }
+
         /* Bottom Navigation */
         .bottom-nav { position: absolute; bottom: 0; width: 100%; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 8px 0; z-index: 40; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #64748b; font-size: 0.75rem; cursor: pointer; padding: 4px 12px; border-radius: 8px; }
@@ -58,7 +69,7 @@
             </div>
             <h1 class="text-2xl font-bold text-gray-800 mb-2">Baga nagaan dhuftan Kitchat</h1>
             <p class="text-gray-500 text-sm mb-8 text-center">Qunnamtii real-time, saffisaa fi salphaa.</p>
-            <button id="googleSignInBtn" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition shadow-sm">
+            <button id="googleSignInBtn" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                 <i class="fab fa-google text-red-500"></i> Gmail fayyadamuun seeni
             </button>
             <button id="installAppBtn" type="button" class="hidden w-full mt-4 rounded-xl bg-[#16a34a] text-white py-3 text-sm font-medium shadow-sm hover:bg-[#15803d] transition">
@@ -130,7 +141,7 @@
             </header>
 
             <div id="chatMessages" class="flex-1 overflow-y-auto px-4 py-4 bg-[#e5ddd5] flex flex-col pb-20">
-                <!-- Messages injected here -->
+                <div id="emptyChatState" class="empty-chat-state">No messages yet. Start the conversation.</div>
             </div>
 
             <div class="bg-gray-100 border-t border-gray-200 px-2 py-2 flex items-center gap-2 absolute bottom-0 w-full z-40">
@@ -174,7 +185,7 @@
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
-                .replace(/\"/g, '&quot;')
+                .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
         }
 
@@ -335,6 +346,7 @@
 
         function loadMessages() {
             const chatMessagesDiv = document.getElementById('chatMessages');
+            const emptyChatState = document.getElementById('emptyChatState');
             chatMessagesDiv.innerHTML = '';
 
             if (!currentChatId) return;
@@ -343,9 +355,17 @@
                 db.ref('chats/' + currentChatId + '/messages').off('child_added', messagesListener);
             }
 
+            chatMessagesDiv.appendChild(emptyChatState);
+            emptyChatState.classList.remove('hidden');
+
             messagesListener = (snapshot) => {
                 const msg = snapshot.val();
                 if (!msg) return;
+
+                if (emptyChatState && emptyChatState.parentNode) {
+                    emptyChatState.remove();
+                }
+
                 renderMessage(msg, snapshot.key);
             };
 
@@ -371,7 +391,7 @@
             } else if (msg.type === 'audio') {
                 contentHTML = `<audio src="${msg.url || ''}" controls class="max-w-[200px] mb-1"></audio>`;
             } else if (msg.type === 'file') {
-                contentHTML = `<a href="${msg.url || '#'}" target="_blank" class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg text-blue-600 text-sm mb-1"><i class="fas fa-file-alt text-lg"></i> Download File</a>`;
+                contentHTML = `<a href="${msg.url || '#'}" target="_blank" class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg text-blue-600 text-sm mb-1"><i class="fas fa-file-alt text-lg"></i>${escapeHtml(msg.fileName || 'File')}</a>`;
             }
 
             let checkmarks = '';
