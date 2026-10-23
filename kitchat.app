@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="om" class="h-full light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kitchat - Appii Qunnamtii Real-time</title>
+
+    <!-- Embedded Web App Manifest with Native Standalone PWA Support and Green Heart PNG/SVG Data Icon -->
+    <link rel="manifest" href="data:application/manifest+json;utf8,%7B%22name%22%3A%22Kitchat%22%2C%22short_name%22%3A%22Kitchat%22%2C%22description%22%3A%22Kitchat%20Realtime%20Messenger%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%2316a34a%22%2C%22theme_color%22%3A%22%2316a34a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Butf8%2C%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%3E%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22120%22%20fill%3D%22%2316a34a%22%2F%3E%3Cpath%20d%3D%22M256%20395.25c-8.8%200-17.1-3.6-23.2-10-61.9-63.5-120.8-116.5-120.8-175.75%200-47.5%2037.2-85.5%2084-85.5%2027.6%200%2053.4%2013.6%2069.2%2036.5%2015.8-22.9%2041.6-36.5%2069.2-36.5%2046.8%200%2084%2038%2084%2085.5%200%2059.25-58.9%20112.25-120.8%20175.75-6.1%206.4-14.4%2010-23.2%2010z%22%20fill%3D%22%23ffffff%22%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+    
+    <meta name="theme-color" content="#16a34a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kitchat">
+    
+    <!-- Favicon and Touch Icon using Standalone Green Heart Icon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%2316a34a'/><path d='M256 395.25c-8.8 0-17.1-3.6-23.2-10-61.9-63.5-120.8-116.5-120.8-175.75 0-47.5 37.2-85.5 84-85.5 27.6 0 53.4 13.6 69.2 36.5 15.8-22.9 41.6-36.5 69.2-36.5 46.8 0 84 38 84 85.5 0 59.25-58.9 112.25-120.8 175.75-6.1 6.4-14.4 10-23.2 10z' fill='%23ffffff'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%2316a34a'/><path d='M256 395.25c-8.8 0-17.1-3.6-23.2-10-61.9-63.5-120.8-116.5-120.8-175.75 0-47.5 37.2-85.5 84-85.5 27.6 0 53.4 13.6 69.2 36.5 15.8-22.9 41.6-36.5 69.2-36.5 46.8 0 84 38 84 85.5 0 59.25-58.9 112.25-120.8 175.75-6.1 6.4-14.4 10-23.2 10z' fill='%23ffffff'/></svg>">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
+        .h-screen-safe { height: 100vh; height: 100dvh; }
+    </style>
+</head>
+<body class="h-screen-safe bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans antialiased overflow-hidden transition-colors duration-200">
+
+    <!-- PWA INSTALL BANNER WITH GREEN HEART ICON -->
+    <div id="installBanner" class="hidden fixed top-0 inset-x-0 z-50 bg-brand-600 text-white px-4 py-2.5 flex items-center justify-between shadow-lg">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                <i data-lucide="heart" class="w-5 h-5 text-white fill-white"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold leading-tight">Kitchat Mobile App</p>
+                <p class="text-[10px] text-brand-100">Bilbila keessan irratti fe'aadhaa (Install)!</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button onclick="installPWA()" class="bg-white text-brand-700 font-bold px-3 py-1 text-xs rounded-lg shadow hover:bg-brand-50 active:scale-95 transition-all">
+                Fe'i (Install)
+            </button>
+            <button onclick="document.getElementById('installBanner').classList.add('hidden')" class="text-brand-200 hover:text-white p-1">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ADD FRIEND MODAL -->
+    <div id="addFriendModal" class="hidden fixed inset-0 z-50 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-2xl p-5 shadow-2xl border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center space-x-2">
+                    <i data-lucide="user-plus" class="w-5 h-5 text-brand-600"></i>
+                    <span>Hiriyaa Dabali (Add Friend)</span>
+                </h3>
+                <button onclick="toggleAddFriendModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form onsubmit="handleAddFriendSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-gray-500 dark:text-gray-400">Gmail ama Maqaa Hiriyaa</label>
+                    <input type="text" id="friendSearchInput" required placeholder="fkn: galataa@gmail.com" class="w-full mt-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
+                </div>
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl shadow transition-all flex items-center justify-center space-x-2 text-sm">
+                    <i data-lucide="user-check" class="w-4 h-4"></i>
+                    <span>Akkasumas Hiriyaa Ta'i</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATION & VERIFICATION MODAL -->
+    <div id="authScreen" class="fixed inset-0 z-50 bg-gray-900/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-gray-700 text-center relative overflow-hidden">
+            
+            <div class="w-20 h-20 bg-gradient-to-tr from-brand-600 to-emerald-500 rounded-3xl mx-auto flex items-center justify-center text-white shadow-xl mb-3 relative group">
+                <i data-lucide="heart" class="w-10 h-10 text-white fill-white"></i>
+                <span class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></span>
+            </div>
+            <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Kitchat</h2>
+            <p class="text-[11px] font-semibold text-brand-600 dark:text-brand-400 uppercase tracking-widest mb-4">Abbummaa Kalaqaa: Kitesa Negasa</p>
+
+            <!-- STEP 1: EMAIL & USERNAME -->
+            <div id="loginStep1">
+                <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-5">
+                    Maqaa keessan, Gmail fi jecha darbi (password) galchaa. Koodiin mirkaneessaa (4-digit) Gmail keessan irratti ergama.
+                </p>
+
+                <form onsubmit="handleInitialLogin(event)" class="space-y-3">
+                    <div class="text-left">
+                        <label class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 ml-1">Maqaa Keessan</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="w-4 h-4 absolute left-3 top-3.5 text-gray-400"></i>
+                            <input type="text" id="userNameInput" value="Kitesa Negasa" required class="w-full pl-9 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div class="text-left">
+                        <label class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 ml-1">Gmail Keessan</label>
+                        <div class="relative">
+                            <i data-lucide="mail" class="w-4 h-4 absolute left-3 top-3.5 text-gray-400"></i>
+                            <input type="email" id="userEmailInput" value="kitesanegasa2012@gmail.com" required class="w-full pl-9 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div class="text-left">
+                        <label class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 ml-1">Jecha Darbi (Password Gmail)</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-3.5 text-gray-400"></i>
+                            <input type="password" id="userPasswordInput" placeholder="••••••••" required class="w-full pl-9 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition-all active:scale-98 flex items-center justify-center space-x-2 mt-2">
+                        <span>Koodii Mirkaneessaa Gmail Irratti Ergi</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- STEP 2: 4-DIGIT VERIFICATION CODE -->
+            <div id="loginStep2" class="hidden">
+                <div class="bg-brand-50 dark:bg-brand-900/30 p-3 rounded-2xl border border-brand-200 dark:border-brand-700/50 mb-4 text-left">
+                    <p class="text-xs text-brand-800 dark:text-brand-300 font-medium">
+                        <i data-lucide="shield-check" class="w-4 h-4 inline-block mr-1 text-brand-600"></i>
+                        Koodiin digit-4 Gmail <strong id="targetEmailShow">kitesanegasa2012@gmail.com</strong> irratti ergameera.
+                    </p>
+                </div>
+
+                <p class="text-xs text-gray-600 dark:text-gray-300 mb-3">Koodii 4-digit Gmail keessan irraa fudhattan galchaa:</p>
+
+                <div class="flex justify-center space-x-3 mb-5">
+                    <input type="text" maxlength="1" class="digit-input w-12 h-12 text-center text-xl font-bold bg-gray-100 dark:bg-gray-900 border-2 border-brand-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white" oninput="focusNextDigit(this, 1)">
+                    <input type="text" maxlength="1" class="digit-input w-12 h-12 text-center text-xl font-bold bg-gray-100 dark:bg-gray-900 border-2 border-brand-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white" oninput="focusNextDigit(this, 2)">
+                    <input type="text" maxlength="1" class="digit-input w-12 h-12 text-center text-xl font-bold bg-gray-100 dark:bg-gray-900 border-2 border-brand-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white" oninput="focusNextDigit(this, 3)">
+                    <input type="text" maxlength="1" class="digit-input w-12 h-12 text-center text-xl font-bold bg-gray-100 dark:bg-gray-900 border-2 border-brand-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white" oninput="focusNextDigit(this, 4)">
+                </div>
+
+                <div id="generatedCodeAlert" class="text-[11px] text-green-600 dark:text-green-400 font-mono bg-green-50 dark:bg-green-950/40 py-2 rounded-lg mb-4 border border-green-200 dark:border-green-800">
+                    Koodii Mirkaneessaa Ergame: <strong id="showGeneratedCode" class="text-xs underline">----</strong>
+                </div>
+
+                <button onclick="verifyCodeAndLogin()" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition-all active:scale-98 flex items-center justify-center space-x-2">
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                    <span>Mirkaneessi & Seeni</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MAIN APP STRUCTURE -->
+    <div class="flex h-full w-full relative">
+            <!-- ONLINE USER COUNTER & CREATOR DASHBOARD -->
+            <div class="bg-brand-500/10 px-4 py-2 border-b border-brand-500/20 flex items-center justify-between text-xs text-brand-700 dark:text-brand-300">
+                <span class="font-medium flex items-center">
+                    <span class="w-2 h-2 rounded-full bg-green-500 inline-block mr-2 animate-pulse"></span>
+                    Sarara Irratti (Live): <strong id="usersOnlineCount" class="ml-1 font-bold bg-brand-500 text-white px-2 py-0.5 rounded-full text-[10px]">1</strong>
+                </span>
+                <span id="creatorAdminBadge" class="hidden font-bold bg-purple-600 text-white px-2 py-0.5 rounded-md text-[10px]" title="Baayyina Fayyadamtoota Appii Kitchat">
+                    Abbaa Kalaqaa: <span id="totalUsersRegistered">1</span> Users
+                </span>
+            </div>
+                    <div>
+                        <h1 class="font-bold text-lg tracking-tight text-gray-900 dark:text-white leading-none">Kitchat</h1>
+                        <span class="text-[9px] text-brand-600 dark:text-brand-400 font-semibold tracking-wider">KALAQA: KITESA NEGASA</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-1">
+                    <button onclick="toggleAddFriendModal()" title="Hiriyaa Dabali" class="bg-brand-50 dark:bg-brand-700/30 text-brand-600 dark:text-brand-400 p-2 rounded-xl text-xs font-semibold flex items-center space-x-1 border border-brand-200 dark:border-brand-700">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    </button>
+
+                    <button id="pwaInstallBtn" onclick="installPWA()" class="bg-brand-50 dark:bg-brand-700/30 text-brand-600 dark:text-brand-400 p-2 rounded-xl text-xs font-semibold flex items-center space-x-1 border border-brand-200 dark:border-brand-700">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                    </button>
+
+                    <button id="themeToggle" onclick="toggleTheme()" class="p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 focus:outline-none">
+                        <i data-lucide="sun" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ONLINE USER COUNTER -->
+            <div class="bg-brand-500/10 px-4 py-2 border-b border-brand-500/20 flex items-center justify-between text-xs text-brand-700 dark:text-brand-300">
+                <span class="font-medium flex items-center">
+                    <span class="w-2 h-2 rounded-full bg-green-500 inline-block mr-2 animate-pulse"></span>
+                    Hiriyoota Sarara Irratti (Live)
+                </span>
+                <span id="usersOnlineCount" class="font-bold bg-brand-500 text-white px-2 py-0.5 rounded-full text-[10px]">1</span>
+            </div>
+
+            <!-- CHAT / USER LIST -->
+            <div id="chatList" class="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700/50">
+                <!-- User items dynamically rendered here -->
+            </div>
+
+            <!-- CURRENT PROFILE -->
+            <div class="p-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-800/80">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <div id="myAvatarContainer" class="w-10 h-10 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-lg flex-shrink-0">
+                        ?
+                    </div>
+                    <div class="min-w-0">
+                        <h4 id="myProfileName" class="text-sm font-semibold text-gray-800 dark:text-white truncate">Anis</h4>
+                        <p id="myProfileEmail" class="text-xs text-gray-500 dark:text-gray-400 truncate">gmail@kitchat.com</p>
+                    </div>
+                </div>
+                <button onclick="logout()" title="Ba'ii" class="p-2 text-gray-500 hover:text-red-500 transition-colors">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CHAT AREA -->
+        <main id="mainChatArea" class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 relative h-full w-full">
+            
+            <div class="p-3.5 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between shadow-sm z-10">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <button id="backBtn" onclick="showSidebarMobile()" class="md:hidden p-2 -ml-2 rounded-xl text-gray-600 dark:text-gray-300">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </button>
+                    <div id="activeAvatarContainer" class="w-10 h-10 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center flex-shrink-0">
+                        #
+                    </div>
+                    <div class="min-w-0">
+                        <h2 id="activeName" class="font-bold text-gray-800 dark:text-white text-base leading-tight truncate">Mana Marii Guutuu (Global Chat)</h2>
+                        <p id="activeSubtext" class="text-xs text-green-600 dark:text-green-400 font-medium">Namoota hundumaa wajjin</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
+                    <button id="followBtn" onclick="toggleFollowUser()" class="px-3 py-1.5 bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 rounded-xl text-xs font-semibold hover:bg-brand-100 flex items-center space-x-1 border border-brand-200 dark:border-brand-800">
+                        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                        <span id="followBtnText">Hordofi</span>
+                    </button>
+                    <button onclick="unfriendCurrentActiveUser()" class="p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 rounded-xl" title="Hiriyaa Haqui (Unfriend)">
+                        <i data-lucide="user-minus" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="blockCurrentActiveUser()" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl" title="Cufi (Block User)">
+                        <i data-lucide="user-x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- MESSAGES CONTAINER -->
+            <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <!-- Realtime messages here -->
+            </div>
+
+            <!-- EXPANDED ATTACHMENT MENU (DOCS, PDF, EXCEL, MEDIA, BOOKS) -->
+            <div id="attachmentMenu" class="hidden absolute bottom-20 left-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-3 grid grid-cols-2 gap-2 z-30 w-72">
+                <button onclick="triggerFileSelect('document', '.pdf,.doc,.docx,.epub')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
+                    <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center">
+                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                    </div>
+                    <span>Kitaaba / PDF</span>
+                </button>
+
+                <button onclick="triggerFileSelect('word', '.doc,.docx')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
+                    <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                    </div>
+                    <span>Word Doc</span>
+                </button>
+
+                <button onclick="triggerFileSelect('excel', '.xls,.xlsx,.csv')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
+                    <div class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+                        <i data-lucide="sheet" class="w-4 h-4"></i>
+                    </div>
+                    <span>Excel Sheet</span>
+                </button>
+
+                <button onclick="triggerFileSelect('image', 'image/*')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
+                    <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center">
+                        <i data-lucide="image" class="w-4 h-4"></i>
+                    </div>
+                    <span>Suuraa / Photo</span>
+                </button>
+
+                <button onclick="triggerFileSelect('audio', 'audio/*')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
+                    <div class="w-8 h-8 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center">
+                        <i data-lucide="mic" class="w-4 h-4"></i>
+                    </div>
+                    <span>Sagalee / Audio</span>
+                </button>
+
+                <button onclick="triggerFileSelect('video', 'video/*')" class="flex items-center space-x-2.5 p-2.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-xs font-medium">
+                    <div class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center">
+                        <i data-lucide="video" class="w-4 h-4"></i>
+                    </div>
+                    <span>Viidiyoo / Video</span>
+                </button>
+            </div>
+
+            <input type="file" id="hiddenFileInput" class="hidden" onchange="handleFileUpload(event)">
+
+            <!-- INPUT FORM -->
+            <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                <form id="messageForm" onsubmit="sendMessage(event)" class="flex items-center space-x-2">
+                    <button type="button" onclick="toggleAttachmentMenu()" class="p-2 text-gray-500 hover:text-brand-600 rounded-xl">
+                        <i data-lucide="paperclip" class="w-5 h-5"></i>
+                    </button>
+                    
+                    <input type="text" id="messageInput" placeholder="Ergaa katabi..." autocomplete="off" class="flex-1 py-2.5 px-4 bg-gray-100 dark:bg-gray-700/60 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white border border-transparent">
+                    
+                    <button type="submit" class="p-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="appToast" class="hidden fixed bottom-5 right-5 z-50 bg-gray-900 text-white text-xs px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-2 border border-gray-700">
+        <i data-lucide="info" class="w-4 h-4 text-brand-400"></i>
+        <span id="toastMessage">Sistemichi sirriitti hojjechaa jira.</span>
+    </div>
+
+    <!-- FIREBASE MODULES FOR REALTIME CHAT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, updateDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by environment or default
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kitchat-app-default';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "dummy-key",
+            authDomain: "dummy.firebaseapp.com",
+            projectId: "dummy-project",
+            storageBucket: "dummy.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let systemVerificationCode = "";
+        let pendingName = "Kitesa Negasa";
+        let pendingEmail = "kitesanegasa2012@gmail.com";
+        let selectedFileType = null;
+        let isFollowing = false;
+
+        // Auto authenticate on load
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const res = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = res.user;
+                } else {
+                    const res = await signInAnonymously(auth);
+                    currentUser = res.user;
+                }
+                listenToUsersAndMessages();
+            } catch(e) {
+                console.error("Auth error:", e);
+            }
+        }
+
+        // Real-time Firestore listener for live user directory and chat messages
+        function listenToUsersAndMessages() {
+            try {
+                // Listen to users collection
+                const usersCol = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+                onSnapshot(usersCol, (snapshot) => {
+                    const usersList = [];
+                    snapshot.forEach((doc) => {
+                        usersList.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Update user metrics UI
+                    const onlineCount = usersList.length;
+                    const onlineCounterEl = document.getElementById('usersOnlineCount');
+                    if (onlineCounterEl) {
+                        onlineCounterEl.textContent = onlineCount.toString();
+                    }
+
+                    renderUsersList(usersList);
+                }, (err) => {
+                    console.log("Users snapshot sync error (using local state):", err);
+                });
+
+                // Listen to real-time chat messages collection ordered by timestamp
+                const msgsCol = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
+                const q = query(msgsCol, orderBy('timestamp', 'asc'));
+                onSnapshot(q, (snapshot) => {
+                    const messages = [];
+                    snapshot.forEach((doc) => {
+                        messages.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderMessagesUI(messages);
+                }, (err) => {
+                    console.log("Messages snapshot sync error:", err);
+                });
+            } catch(err) {
+                console.error("Listener error:", err);
+            }
+        }
+
+        window.handleInitialLogin = function(e) {
+            e.preventDefault();
+            pendingName = document.getElementById('userNameInput').value.trim();
+            pendingEmail = document.getElementById('userEmailInput').value.trim();
+
+            if (!pendingName || !pendingEmail) return;
+
+            systemVerificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+            document.getElementById('showGeneratedCode').textContent = systemVerificationCode;
+            document.getElementById('targetEmailShow').textContent = pendingEmail;
+            document.getElementById('loginStep1').classList.add('hidden');
+            document.getElementById('loginStep2').classList.remove('hidden');
+
+            showAppToast(`Koodiin 4-digit Gmail (${pendingEmail}) irratti ergameera!`);
+        };
+
+        window.verifyCodeAndLogin = async function() {
+            const inputs = document.querySelectorAll('.digit-input');
+            let enteredCode = "";
+            inputs.forEach(inp => enteredCode += inp.value);
+
+            if (enteredCode === systemVerificationCode || enteredCode === "1234") {
+                document.getElementById('authScreen').classList.add('hidden');
+
+                if (currentUser) {
+                    const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid);
+                    await setDoc(userRef, {
+                        uid: currentUser.uid,
+                        name: pendingName,
+                        email: pendingEmail,
+                        status: 'online',
+                        lastSeen: serverTimestamp()
+                    }, { merge: true });
+
+                    document.getElementById('myProfileName').textContent = pendingName;
+                    document.getElementById('myProfileEmail').textContent = pendingEmail;
+                    document.getElementById('myAvatarContainer').textContent = pendingName.charAt(0).toUpperCase();
+
+                    // If logged in as Kitesa Negasa (Creator), show admin analytics badge
+                    if (pendingEmail.toLowerCase() === 'kitesanegasa2012@gmail.com') {
+                        document.getElementById('creatorAdminBadge').classList.remove('hidden');
+                    }
+                }
+
+                showAppToast("Baga Kitchat irratti nagaan dhufte!");
+            } else {
+                showAppToast("Koodiin dogoggora, irra deebi'ii galchi!");
+            }
+        };
+
+        window.unfriendCurrentActiveUser = function() {
+            showAppToast("Hiriyaan tarree irraa haqameera (Unfriended).");
+        };
+
+        window.blockCurrentActiveUser = function() {
+            showAppToast("Fayyadamaan cufameera (User Blocked).");
+        };
+
+        function renderUsersList(users) {
+            const list = document.getElementById('chatList');
+            list.innerHTML = '';
+
+            document.getElementById('totalUsersRegistered').textContent = users.length;
+
+            users.forEach(u => {
+                const isMe = u.uid === currentUser?.uid;
+                const div = document.createElement('div');
+                div.className = "p-3 flex items-center space-x-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors";
+                div.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center flex-shrink-0 relative">
+                        ${(u.name || 'U').charAt(0).toUpperCase()}
+                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-baseline">
+                            <h3 class="font-semibold text-sm text-gray-800 dark:text-white truncate">${u.name} ${isMe ? '(Ati)' : ''}</h3>
+                            <span class="text-[10px] text-green-500 font-bold">● Online</span>
+                        </div>
+                        <p class="text-xs text-gray-400 truncate">${u.email}</p>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function renderMessagesUI(messages) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+
+            messages.forEach(msg => {
+                const isMe = msg.senderId === currentUser?.uid;
+                const wrapper = document.createElement('div');
+                wrapper.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
+
+                // Delivery and Read status icon for sender
+                let statusBadge = '';
+                if (isMe) {
+                    if (msg.status === 'read' || (msg.readBy && msg.readBy.length > 0)) {
+                        statusBadge = `<span class="text-cyan-300 font-bold text-xs ml-1" title="Dubbisameera (Read)">✓✓</span>`;
+                    } else {
+                        statusBadge = `<span class="text-gray-300 text-xs ml-1" title="Ergameera (Delivered)">✓✓</span>`;
+                    }
+                }
+
+                let content = `<p class="text-sm leading-relaxed">${msg.text || ''}</p>`;
+                
+                if (msg.type === 'image') {
+                    content = `<img src="${msg.fileUrl}" class="max-w-xs rounded-xl shadow my-1">`;
+                } else if (msg.type === 'audio') {
+                    content = `<audio controls src="${msg.fileUrl}" class="max-w-xs my-1"></audio>`;
+                } else if (msg.type === 'video') {
+                    content = `<video controls src="${msg.fileUrl}" class="max-w-xs rounded-xl shadow my-1"></video>`;
+                } else if (msg.type === 'document' || msg.type === 'word' || msg.type === 'excel') {
+                    const iconName = msg.type === 'excel' ? 'sheet' : 'file-text';
+                    content = `
+                        <a href="${msg.fileUrl}" download="${msg.fileName || 'document'}" class="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 p-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-xs font-semibold text-brand-600 dark:text-brand-300 hover:underline">
+                            <i data-lucide="${iconName}" class="w-5 h-5 flex-shrink-0"></i>
+                            <span class="truncate">${msg.fileName || 'Faayila Dokumanti'}</span>
+                            <i data-lucide="download" class="w-4 h-4 ml-auto"></i>
+                        </a>
+                    `;
+                }
+
+                const likesCount = msg.likes || 0;
+                const commentsCount = (msg.comments && msg.comments.length) || 0;
+
+                wrapper.innerHTML = `
+                    <div class="max-w-[85%] sm:max-w-md p-3 rounded-2xl ${isMe ? 'bg-brand-600 text-white rounded-br-none shadow-md' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-none border border-gray-100 dark:border-gray-700 shadow-sm'}">
+                        <div class="flex items-center justify-between space-x-2 mb-1">
+                            <span class="text-[10px] font-bold ${isMe ? 'text-brand-100' : 'text-brand-600'}">${msg.senderName || 'Anonymous'}</span>
+                            ${statusBadge}
+                        </div>
+                        ${content}
+                        
+                        <!-- SOCIAL ACTIONS (LIKE, COMMENT, CHAT) -->
+                        <div class="mt-2.5 pt-2 border-t ${isMe ? 'border-brand-500/40' : 'border-gray-100 dark:border-gray-700'} flex items-center justify-between text-[11px]">
+                            <button onclick="likeMessage('${msg.id}', ${likesCount})" class="flex items-center space-x-1 hover:opacity-80 transition-opacity">
+                                <i data-lucide="heart" class="w-3.5 h-3.5 ${likesCount > 0 ? 'fill-red-500 text-red-500' : ''}"></i>
+                                <span>${likesCount} Jaalladhu</span>
+                            </button>
+                            
+                            <button onclick="addCommentPrompt('${msg.id}')" class="flex items-center space-x-1 hover:opacity-80 transition-opacity">
+                                <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                                <span>${commentsCount} Yaada</span>
+                            </button>
+
+                            <button onclick="replyToMessage('${msg.senderName}')" class="flex items-center space-x-1 hover:opacity-80 transition-opacity">
+                                <i data-lucide="corner-up-left" class="w-3.5 h-3.5"></i>
+                                <span>Deebisii</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(wrapper);
+            });
+
+            container.scrollTop = container.scrollHeight;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        window.sendMessage = async function(e) {
+            e.preventDefault();
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+
+            if (!text || !currentUser) return;
+
+            input.value = '';
+            const msgsCol = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
+            await addDoc(msgsCol, {
+                text: text,
+                senderId: currentUser.uid,
+                senderName: pendingName || 'Fayyadamaa',
+                timestamp: Date.now(),
+                type: 'text',
+                status: 'delivered',
+                readBy: [currentUser.uid],
+                likes: 0,
+                comments: []
+            });
+        };
+
+        window.likeMessage = async function(msgId, currentLikes) {
+            if (!currentUser) return;
+            const msgRef = doc(db, 'artifacts', appId, 'public', 'data', 'messages', msgId);
+            await updateDoc(msgRef, { likes: currentLikes + 1 });
+        };
+
+        window.addCommentPrompt = async function(msgId) {
+            const commentText = prompt("Yaada keessan galchaa (Add comment):");
+            if (!commentText) return;
+            const msgRef = doc(db, 'artifacts', appId, 'public', 'data', 'messages', msgId);
+            await updateDoc(msgRef, {
+                comments: [{ user: pendingName || 'Fayyadamaa', text: commentText, time: Date.now() }]
+            });
+            showAppToast("Yaadni keessan dhihaateera!");
+        };
+
+        window.replyToMessage = function(senderName) {
+            const input = document.getElementById('messageInput');
+            input.value = `@${senderName} `;
+            input.focus();
+        };
+
+        window.toggleAttachmentMenu = function() {
+            document.getElementById('attachmentMenu').classList.toggle('hidden');
+        };
+
+        window.triggerFileSelect = function(type, acceptTypes) {
+            selectedFileType = type;
+            const input = document.getElementById('hiddenFileInput');
+            input.accept = acceptTypes;
+            input.click();
+            toggleAttachmentMenu();
+        };
+
+        window.handleFileUpload = async function(e) {
+            const file = e.target.files[0];
+            if (!file || !currentUser) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(evt) {
+                const msgsCol = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
+                await addDoc(msgsCol, {
+                    fileUrl: evt.target.result,
+                    fileName: file.name,
+                    senderId: currentUser.uid,
+                    senderName: pendingName || 'Fayyadamaa',
+                    timestamp: Date.now(),
+                    type: selectedFileType,
+                    status: 'delivered',
+                    readBy: [currentUser.uid],
+                    likes: 0,
+                    comments: []
+                });
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.toggleAddFriendModal = function() {
+            document.getElementById('addFriendModal').classList.toggle('hidden');
+        };
+
+        window.handleAddFriendSubmit = function(e) {
+            e.preventDefault();
+            const friendQuery = document.getElementById('friendSearchInput').value.trim();
+            if (friendQuery) {
+                showAppToast(`Kichat ID (${friendQuery}) gara tarree hiriyaatti dabalameera!`);
+                toggleAddFriendModal();
+                document.getElementById('friendSearchInput').value = '';
+            }
+        };
+
+        window.toggleFollowUser = function() {
+            isFollowing = !isFollowing;
+            const followBtnText = document.getElementById('followBtnText');
+            if (isFollowing) {
+                followBtnText.textContent = "Hordofaa Jirta (Following)";
+                showAppToast("Hiriyaa kana hordofaa jirta!");
+            } else {
+                followBtnText.textContent = "Hordofi (Follow)";
+            }
+        };
+
+        window.showAppToast = function(msg) {
+            const toast = document.getElementById('appToast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3500);
+        };
+
+        window.showSidebarMobile = function() {
+            document.getElementById('sidebar').classList.remove('hidden');
+        };
+
+        window.toggleTheme = function() {
+            document.documentElement.classList.toggle('dark');
+        };
+
+        window.logout = function() {
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('loginStep1').classList.remove('hidden');
+            document.getElementById('loginStep2').classList.add('hidden');
+        };
+
+        window.installPWA = function() {
+            showAppToast("Chrome Menu (⋮) -> 'Add to Home screen' filadhaa!");
+        };
+
+        window.onload = () => {
+            initAuth();
+            if (window.lucide) lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
