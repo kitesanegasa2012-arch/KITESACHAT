@@ -3,17 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kitchat - Appii Qunnamtii Real-time</title>
-
-    <!-- Manifest -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Kitchat","short_name":"Kitchat","description":"Kitchat Realtime Messenger","start_url":"./","display":"standalone","background_color":"%2316a34a","theme_color":"%2316a34a","icons":[{"src":"https://ui-avatars.com/api/?name=K&background=16a34a&color=fff&size=192","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"https://ui-avatars.com/api/?name=K&background=16a34a&color=fff&size=512","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
+    <title>Kitchat - Telegram Clone</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs (compat mode) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -22,42 +18,44 @@
         * { font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #f0f7f0; height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; }
         .app-container { height: 100vh; width: 100%; max-width: 420px; background: #ffffff; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
-        .chat-messages::-webkit-scrollbar { width: 4px; }
-        .chat-messages::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 10px; }
-        .chat-messages { scrollbar-width: thin; scrollbar-color: #cbd5e0 #f7fafc; }
-        .msg-bubble { max-width: 80%; padding: 10px 16px; border-radius: 24px; font-size: 0.95rem; line-height: 1.4; word-break: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+        
+        /* Chat Styles */
+        .msg-bubble { max-width: 80%; padding: 10px 16px; border-radius: 24px; font-size: 0.95rem; word-break: break-word; }
         .msg-outgoing { background: #16a34a; color: white; border-bottom-right-radius: 6px; margin-left: auto; }
         .msg-incoming { background: #f1f5f9; color: #0f172a; border-bottom-left-radius: 6px; margin-right: auto; }
-        .msg-meta { font-size: 0.65rem; opacity: 0.7; margin-top: 4px; display: flex; justify-content: flex-end; gap: 6px; }
-        .msg-outgoing .msg-meta { color: rgba(255,255,255,0.8); }
-        .msg-incoming .msg-meta { color: #64748b; }
-        .fade-enter { animation: fadeSlide 0.2s ease-out; }
-        @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-        .screen { display: none; flex-direction: column; height: 100%; }
+        
+        /* Screen Transitions */
+        .screen { display: none; flex-direction: column; height: 100%; position: absolute; top: 0; left: 0; width: 100%; background: #f8fafc; z-index: 50; }
         .screen.active { display: flex; }
+        
+        /* Bottom Nav */
+        .bottom-nav { position: absolute; bottom: 0; width: 100%; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 10px 0; z-index: 40; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #64748b; font-size: 0.75rem; cursor: pointer; }
+        .nav-item.active { color: #16a34a; }
+        .nav-item i { font-size: 1.25rem; margin-bottom: 4px; }
+
+        /* Video Call UI */
+        #localVideo { position: absolute; bottom: 20px; right: 20px; width: 100px; height: 150px; background: #000; border-radius: 10px; z-index: 60; object-fit: cover; }
+        #remoteVideo { width: 100%; height: 100%; object-fit: cover; background: #1e293b; }
     </style>
 </head>
 <body class="h-full light">
     <div class="app-container">
         
         <!-- LOGIN SCREEN -->
-        <div id="loginScreen" class="screen active px-6 py-10 justify-center items-center bg-white">
+        <div id="loginScreen" class="screen active px-6 py-10 justify-center items-center bg-white" style="z-index: 100;">
             <div class="w-20 h-20 rounded-3xl bg-[#16a34a] flex items-center justify-center text-white text-4xl mb-6 shadow-lg">
                 <i class="fas fa-comment-dots"></i>
             </div>
             <h1 class="text-2xl font-bold text-gray-800 mb-2">Baga nagaan dhuftan Kitchat</h1>
             <p class="text-gray-500 text-sm mb-8 text-center">Qunnamtii real-time, saffisaa fi salphaa.</p>
-
-            <!-- Google Sign-In -->
             <button id="googleSignInBtn" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition shadow-sm">
                 <i class="fab fa-google text-red-500"></i> Gmail fayyadamuun seeni
             </button>
-
-            <p class="text-xs text-gray-400 mt-8 text-center">Kitchat Realtime Messenger by Kitesa Negasa</p>
         </div>
 
-        <!-- CHAT SCREEN -->
-        <div id="chatScreen" class="screen">
+        <!-- MAIN CHAT SCREEN -->
+        <div id="chatScreen" class="screen" style="display: flex; flex-direction: column; z-index: 10;">
             <header class="bg-[#16a34a] px-4 py-3 flex items-center justify-between shadow-sm z-10">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-xl">
@@ -65,34 +63,125 @@
                     </div>
                     <div>
                         <h1 class="text-white font-semibold text-lg leading-tight">Kitchat</h1>
-                        <p id="userStatus" class="text-[#dcfce7] text-xs font-medium flex items-center gap-1">
-                            <span class="inline-block w-2 h-2 bg-emerald-300 rounded-full"></span>
-                            <span id="userDisplayName">Online</span>
-                        </p>
+                        <p id="chatUserName" class="text-[#dcfce7] text-xs">Online</p>
                     </div>
                 </div>
                 <div class="flex gap-4 text-white/90 text-lg">
-                    <button id="logoutBtn" class="hover:text-white transition" title="Ba'i"><i class="fas fa-sign-out-alt"></i></button>
+                    <button onclick="startCall('audio')" class="hover:text-white"><i class="fas fa-phone"></i></button>
+                    <button onclick="startCall('video')" class="hover:text-white"><i class="fas fa-video"></i></button>
                 </div>
             </header>
 
-            <div id="chatContainer" class="flex-1 overflow-y-auto px-4 py-4 chat-messages bg-[#f8fafc] flex flex-col gap-2">
+            <div id="chatContainer" class="flex-1 overflow-y-auto px-4 py-4 bg-[#f8fafc] flex flex-col gap-2 pb-20">
                 <!-- Messages injected here -->
             </div>
 
-            <footer class="bg-white border-t border-gray-100 px-3 py-2 flex items-center gap-2">
-                <input id="messageInput" type="text" placeholder="Fakkii... (Message)" 
-                       class="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#16a34a]/30 transition border border-transparent focus:border-[#16a34a]/30">
-                <button id="sendButton" class="w-10 h-10 rounded-full bg-[#16a34a] text-white flex items-center justify-center shadow-sm hover:bg-[#15803d] transition active:scale-95">
+            <footer class="bg-white border-t border-gray-100 px-3 py-2 flex items-center gap-2 absolute bottom-0 w-full" style="z-index: 20;">
+                <input id="messageInput" type="text" placeholder="Fakkii... (Message)" class="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm outline-none">
+                <button id="sendButton" class="w-10 h-10 rounded-full bg-[#16a34a] text-white flex items-center justify-center">
                     <i class="fas fa-paper-plane text-sm"></i>
                 </button>
             </footer>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav" style="display: none;"> <!-- Hidden in chat for now -->
+                <div class="nav-item active"><i class="fas fa-comment"></i>Chats</div>
+                <div class="nav-item"><i class="fas fa-user"></i>Contacts</div>
+                <div class="nav-item" onclick="showProfile()"><i class="fas fa-cog"></i>Settings</div>
+            </div>
         </div>
+
+        <!-- PROFILE SETTINGS SCREEN (Akkuma Telegram) -->
+        <div id="profileScreen" class="screen">
+            <header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="hideProfile()" class="text-gray-600"><i class="fas fa-arrow-left"></i></button>
+                    <h1 class="text-lg font-semibold text-gray-800">Settings</h1>
+                </div>
+                <button class="text-gray-600"><i class="fas fa-search"></i></button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto bg-gray-50 pb-20">
+                <!-- Profile Info -->
+                <div class="bg-white flex flex-col items-center py-6 px-4 mb-3">
+                    <div class="w-24 h-24 rounded-full bg-gray-300 mb-3 flex items-center justify-center text-4xl text-white overflow-hidden relative">
+                        <img id="profilePic" src="https://ui-avatars.com/api/?name=User&background=16a34a&color=fff&size=128" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 right-0 bg-[#16a34a] w-8 h-8 rounded-full flex items-center justify-center border-2 border-white text-white text-sm">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <h2 id="profileName" class="text-xl font-bold text-gray-800">Kitesa Negasa</h2>
+                    <p id="profilePhone" class="text-gray-500 text-sm">+251 969184005</p>
+                </div>
+
+                <!-- Settings Options -->
+                <div class="bg-white mb-3">
+                    <div class="flex items-center gap-4 px-4 py-3 border-b border-gray-100">
+                        <i class="fas fa-user text-blue-500 text-lg"></i>
+                        <div class="flex-1">
+                            <p class="text-gray-800 font-medium">Account</p>
+                            <p class="text-xs text-gray-500">Number, Username, Bio</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+                    </div>
+                    <div class="flex items-center gap-4 px-4 py-3 border-b border-gray-100">
+                        <i class="fas fa-comment-dots text-orange-500 text-lg"></i>
+                        <div class="flex-1">
+                            <p class="text-gray-800 font-medium">Chat Settings</p>
+                            <p class="text-xs text-gray-500">Wallpaper, Night Mode, Animations</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+                    </div>
+                    <div class="flex items-center gap-4 px-4 py-3 border-b border-gray-100">
+                        <i class="fas fa-key text-green-500 text-lg"></i>
+                        <div class="flex-1">
+                            <p class="text-gray-800 font-medium">Privacy & Security</p>
+                            <p class="text-xs text-gray-500">Last Seen, Devices, Passkeys</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+                    </div>
+                    <div class="flex items-center gap-4 px-4 py-3">
+                        <i class="fas fa-bell text-red-500 text-lg"></i>
+                        <div class="flex-1">
+                            <p class="text-gray-800 font-medium">Notifications</p>
+                            <p class="text-xs text-gray-500">Sounds, Calls, Badges</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+                    </div>
+                </div>
+
+                <!-- Logout -->
+                <div class="bg-white">
+                    <div onclick="logout()" class="flex items-center gap-4 px-4 py-3 cursor-pointer">
+                        <i class="fas fa-sign-out-alt text-red-500 text-lg"></i>
+                        <p class="text-red-500 font-medium">Ba'i (Logout)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALL SCREEN -->
+        <div id="callScreen" class="screen bg-gray-900 justify-center items-center" style="z-index: 110;">
+            <div class="absolute top-10 left-0 w-full text-center text-white z-20">
+                <h2 id="callUserName" class="text-2xl font-bold">Calling...</h2>
+                <p id="callStatus" class="text-gray-400 mt-1">Connecting...</p>
+            </div>
+            
+            <video id="localVideo" autoplay muted playsinline></video>
+            <video id="remoteVideo" autoplay playsinline></video>
+
+            <div class="absolute bottom-10 left-0 w-full flex justify-center gap-6 z-20">
+                <button onclick="endCall()" class="w-14 h-14 rounded-full bg-red-500 text-white flex items-center justify-center text-xl shadow-lg">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <script>
         // ============================================================
-        // FIREBASE CONFIGURATION (Haaromsameera)
+        // FIREBASE CONFIG (Kan keessan)
         // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyCraTczVNl2oBTDp531KHyu6cINac37nhE",
@@ -101,181 +190,161 @@
             projectId: "kitchat-6dd20",
             storageBucket: "kitchat-6dd20.firebasestorage.app",
             messagingSenderId: "830131023971",
-            appId: "1:830131023971:web:b694c059bfb978bb3b0856",
-            measurementId: "G-HCB3W42NJV"
+            appId: "1:830131023971:web:b694c059bfb978bb3b0856"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const database = firebase.database();
+        const db = firebase.database();
 
         // DOM Elements
         const loginScreen = document.getElementById('loginScreen');
         const chatScreen = document.getElementById('chatScreen');
-        const googleSignInBtn = document.getElementById('googleSignInBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const chatContainer = document.getElementById('chatContainer');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const userDisplayName = document.getElementById('userDisplayName');
-
+        const profileScreen = document.getElementById('profileScreen');
+        const callScreen = document.getElementById('callScreen');
+        
         let currentUser = null;
-        let messagesRef = null;
 
         // ============================================================
-        // AUTH STATE LISTENER
+        // AUTH
         // ============================================================
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUser = user;
-                loginScreen.classList.remove('active');
-                chatScreen.classList.add('active');
-                
-                // Display user name
-                if (user.displayName) {
-                    userDisplayName.textContent = user.displayName;
-                } else if (user.email) {
-                    userDisplayName.textContent = user.email;
-                } else {
-                    userDisplayName.textContent = 'User';
-                }
-
-                loadMessages();
-            } else {
-                currentUser = null;
-                loginScreen.classList.add('active');
-                chatScreen.classList.remove('active');
-                chatContainer.innerHTML = '';
-                if (messagesRef) {
-                    messagesRef.off();
-                    messagesRef = null;
-                }
-            }
-        });
-
-        // ============================================================
-        // GOOGLE SIGN-IN
-        // ============================================================
-        googleSignInBtn.addEventListener('click', async () => {
+        document.getElementById('googleSignInBtn').addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 await auth.signInWithPopup(provider);
             } catch (error) {
-                console.error('Google sign-in error:', error);
-                // Dogoggora popup yoo dhufu redirect fayyadami
-                if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
-                    await auth.signInWithRedirect(provider);
-                } else {
-                    alert('Dogoggora seenuu Gmail: ' + error.message);
-                }
+                console.error(error);
+                alert('Dogoggora seenuu: ' + error.message);
+            }
+        });
+
+        function logout() {
+            auth.signOut();
+            profileScreen.classList.remove('active');
+            chatScreen.style.display = 'flex';
+        }
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loginScreen.classList.remove('active');
+                chatScreen.style.display = 'flex';
+                
+                // Update Profile Info
+                document.getElementById('profileName').textContent = user.displayName || 'User';
+                document.getElementById('profilePhone').textContent = user.phoneNumber || user.email;
+                if(user.photoURL) document.getElementById('profilePic').src = user.photoURL;
+                
+                document.getElementById('chatUserName').textContent = "Chat with " + (user.displayName || "User");
+                
+                loadMessages();
+            } else {
+                currentUser = null;
+                chatScreen.style.display = 'none';
+                profileScreen.classList.remove('active');
+                loginScreen.classList.add('active');
             }
         });
 
         // ============================================================
-        // LOGOUT
+        // NAVIGATION
         // ============================================================
-        logoutBtn.addEventListener('click', () => {
-            auth.signOut();
-        });
+        function showProfile() {
+            chatScreen.style.display = 'none';
+            profileScreen.classList.add('active');
+        }
+        function hideProfile() {
+            profileScreen.classList.remove('active');
+            chatScreen.style.display = 'flex';
+        }
 
         // ============================================================
-        // REALTIME DATABASE - MESSAGES
+        // CHAT LOGIC
         // ============================================================
         function loadMessages() {
-            if (messagesRef) messagesRef.off();
-            
-            messagesRef = database.ref('messages');
-            
-            messagesRef.limitToLast(100).on('child_added', (snapshot) => {
+            const messagesRef = db.ref('messages').limitToLast(50);
+            messagesRef.on('child_added', (snapshot) => {
                 const msg = snapshot.val();
-                const msgId = snapshot.key;
-                renderMessage(msg, msgId);
+                if (document.querySelector(`[data-id="${snapshot.key}"]`)) return;
+                
+                const isOut = msg.senderId === currentUser.uid;
+                const div = document.createElement('div');
+                div.className = `flex ${isOut ? 'justify-end' : 'justify-start'}`;
+                div.setAttribute('data-id', snapshot.key);
+                
+                div.innerHTML = `
+                    <div class="msg-bubble ${isOut ? 'msg-outgoing' : 'msg-incoming'}">
+                        ${!isOut && msg.senderName ? `<div class="text-xs text-green-700 font-bold mb-1">${msg.senderName}</div>` : ''}
+                        <div>${msg.text}</div>
+                        <div class="text-[10px] text-right mt-1 opacity-70">${msg.time}</div>
+                    </div>
+                `;
+                document.getElementById('chatContainer').appendChild(div);
+                document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
             });
         }
 
-        function renderMessage(msg, msgId) {
-            if (document.querySelector(`[data-msg-id="${msgId}"]`)) return;
-            
-            const isOut = msg.senderId === currentUser.uid;
-            const bubbleDiv = document.createElement('div');
-            bubbleDiv.className = `flex ${isOut ? 'justify-end' : 'justify-start'} fade-enter`;
-            bubbleDiv.setAttribute('data-msg-id', msgId);
+        document.getElementById('sendButton').addEventListener('click', () => {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            if(!text || !currentUser) return;
 
-            const innerDiv = document.createElement('div');
-            innerDiv.className = `msg-bubble ${isOut ? 'msg-outgoing' : 'msg-incoming'}`;
-
-            if (!isOut && msg.senderName) {
-                const nameDiv = document.createElement('div');
-                nameDiv.className = 'text-xs font-semibold text-[#16a34a] mb-1';
-                nameDiv.textContent = msg.senderName;
-                innerDiv.appendChild(nameDiv);
-            }
-
-            const textSpan = document.createElement('div');
-            textSpan.textContent = msg.text;
-            innerDiv.appendChild(textSpan);
-
-            const metaDiv = document.createElement('div');
-            metaDiv.className = 'msg-meta';
-            const timeSpan = document.createElement('span');
-            timeSpan.textContent = msg.time || new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            metaDiv.appendChild(timeSpan);
-
-            if (isOut) {
-                const statusSpan = document.createElement('span');
-                statusSpan.innerHTML = '<i class="fas fa-check-double text-[10px]"></i>';
-                metaDiv.appendChild(statusSpan);
-            }
-
-            innerDiv.appendChild(metaDiv);
-            bubbleDiv.appendChild(innerDiv);
-            chatContainer.appendChild(bubbleDiv);
-
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function sendMessage() {
-            const text = messageInput.value.trim();
-            if (text === '' || !currentUser) return;
-
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            const messageData = {
+            db.ref('messages').push({
                 text: text,
                 senderId: currentUser.uid,
-                senderName: currentUser.displayName || currentUser.email || 'User',
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                time: timeStr
-            };
-
-            database.ref('messages').push(messageData)
-                .catch((error) => {
-                    console.error('Error sending message:', error);
-                    alert('Dogoggora ergaa erguu: ' + error.message);
-                });
-
-            messageInput.value = '';
-            messageInput.focus();
-        }
-
-        sendButton.addEventListener('click', sendMessage);
-
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                sendMessage();
-            }
+                senderName: currentUser.displayName || 'User',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            input.value = '';
         });
 
-        // Service Worker (PWA)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('data:text/javascript,self.addEventListener("fetch",()=>{})')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW registration failed:', err));
-            });
+        // ============================================================
+        // WEBRTC CALLING (Video & Audio)
+        // ============================================================
+        let localStream = null;
+        let peerConnection = null;
+        const servers = {
+            iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }]
+        };
+
+        async function startCall(type) {
+            // Hubachiisa: Kun bu'uura WebRTC qofa. Callii guutuu taasiisuuf signaling server barbaachisa.
+            callScreen.classList.add('active');
+            document.getElementById('callUserName').textContent = "Kitesa Negasa";
+            document.getElementById('callStatus').textContent = type === 'video' ? "Video Call..." : "Audio Call...";
+
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: type === 'video', 
+                    audio: true 
+                });
+                
+                document.getElementById('localVideo').srcObject = localStream;
+                document.getElementById('localVideo').style.display = type === 'video' ? 'block' : 'none';
+
+                // Create Peer Connection
+                peerConnection = new RTCPeerConnection(servers);
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+                peerConnection.ontrack = (event) => {
+                    document.getElementById('remoteVideo').srcObject = event.streams[0];
+                };
+
+                // TODO: Signaling (Ergaa WebRTC of keessatti qabata) Firebase Realtime Database fayyadamuun raawwatama.
+                // Kanaaf, koodii dheeraa barbaachisa. Ammaaf, local camera qofa agarsiisa.
+
+            } catch (err) {
+                console.error("Call error:", err);
+                alert("Kaameraa ykn Maayikii banuu hin dandeenye.");
+                endCall();
+            }
+        }
+
+        function endCall() {
+            if (localStream) localStream.getTracks().forEach(track => track.stop());
+            if (peerConnection) peerConnection.close();
+            callScreen.classList.remove('active');
         }
     </script>
 </body>
