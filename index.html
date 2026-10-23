@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#16a34a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kitchat">
     <title>Kitchat - Telegram Clone</title>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%2316a34a'/%3E%3Cpath d='M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z' fill='white'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%2316a34a'/%3E%3Cpath d='M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z' fill='white'/%3E%3C/svg%3E">
 
     <!-- MANIFEST: Icoonii Onnee Magariisaa fi Adii -->
     <link rel="manifest" href='data:application/manifest+json,{"name":"Kitchat","short_name":"Kitchat","description":"Realtime Messenger","start_url":"./","display":"standalone","background_color":"%2316a34a","theme_color":"%2316a34a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%2316a34a%22/><path d=%22M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z%22 fill=%22white%22/></svg>","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"},{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%2316a34a%22/><path d=%22M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z%22 fill=%22white%22/></svg>","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'>
@@ -12,7 +19,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
-    
+
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -23,17 +30,17 @@
         * { font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #f0f7f0; height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; }
         .app-container { height: 100vh; width: 100%; max-width: 420px; background: #ffffff; display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        
+
         /* Fuulawwan adda baasan */
         .screen { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; background: #f8fafc; z-index: 50; }
         .screen.active { display: flex; }
-        
+
         /* Chat Styles */
         .msg-bubble { max-width: 80%; padding: 8px 12px; border-radius: 18px; font-size: 0.95rem; word-break: break-word; margin-bottom: 4px; position: relative; }
         .msg-outgoing { background: #dcf8c6; color: #000; border-bottom-right-radius: 4px; margin-left: auto; }
         .msg-incoming { background: #ffffff; color: #000; border-bottom-left-radius: 4px; margin-right: auto; }
         .msg-time { font-size: 0.65rem; color: #888; float: right; margin-left: 8px; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
-        
+
         /* Bottom Navigation */
         .bottom-nav { position: absolute; bottom: 0; width: 100%; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 8px 0; z-index: 40; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #64748b; font-size: 0.75rem; cursor: pointer; padding: 4px 12px; border-radius: 8px; }
@@ -43,7 +50,7 @@
 </head>
 <body class="h-full light">
     <div class="app-container">
-        
+
         <!-- LOGIN SCREEN -->
         <div id="loginScreen" class="screen active px-6 py-10 justify-center items-center bg-white" style="z-index: 100;">
             <div class="w-20 h-20 rounded-3xl bg-[#16a34a] flex items-center justify-center text-white text-4xl mb-6 shadow-lg">
@@ -53,6 +60,9 @@
             <p class="text-gray-500 text-sm mb-8 text-center">Qunnamtii real-time, saffisaa fi salphaa.</p>
             <button id="googleSignInBtn" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition shadow-sm">
                 <i class="fab fa-google text-red-500"></i> Gmail fayyadamuun seeni
+            </button>
+            <button id="installAppBtn" type="button" class="hidden w-full mt-4 rounded-xl bg-[#16a34a] text-white py-3 text-sm font-medium shadow-sm hover:bg-[#15803d] transition">
+                <i class="fas fa-download mr-2"></i>App install gochuu
             </button>
         </div>
 
@@ -86,7 +96,7 @@
             </div>
         </div>
 
-        <!-- PROFILE SCREEN (Barruun asii irraa haqameera) -->
+        <!-- PROFILE SCREEN -->
         <div id="profileScreen" class="screen">
             <header class="bg-[#16a34a] px-4 py-3 flex items-center justify-between shadow-sm z-10">
                 <h1 class="text-white font-semibold text-xl">Profile</h1>
@@ -106,7 +116,7 @@
             </div>
         </div>
 
-        <!-- CHAT ROOM SCREEN (Barruun fi Button asirratti qofa jira) -->
+        <!-- CHAT ROOM SCREEN -->
         <div id="chatRoomScreen" class="screen">
             <header class="bg-[#16a34a] px-4 py-2 flex items-center justify-between shadow-sm z-10">
                 <div class="flex items-center gap-3">
@@ -118,18 +128,17 @@
                     </div>
                 </div>
             </header>
-            
+
             <div id="chatMessages" class="flex-1 overflow-y-auto px-4 py-4 bg-[#e5ddd5] flex flex-col pb-20">
                 <!-- Messages injected here -->
             </div>
 
-            <!-- INPUT BAR: Kan barruu fi button ergaa qabu -->
             <div class="bg-gray-100 border-t border-gray-200 px-2 py-2 flex items-center gap-2 absolute bottom-0 w-full z-40">
                 <button onclick="document.getElementById('fileInput').click()" class="text-gray-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200">
                     <i class="fas fa-paperclip text-lg"></i>
                 </button>
                 <input type="file" id="fileInput" class="hidden" accept="image/*,video/*,audio/*,.pdf,.doc,.docx" onchange="uploadFile(event)">
-                
+
                 <input id="messageInput" type="text" placeholder="Message..." class="flex-1 bg-white rounded-full px-4 py-2 text-sm outline-none border border-gray-300">
                 <button id="sendButton" class="w-10 h-10 rounded-full bg-[#16a34a] text-white flex items-center justify-center shadow-sm">
                     <i class="fas fa-paper-plane text-sm"></i>
@@ -140,9 +149,6 @@
     </div>
 
     <script>
-        // ============================================================
-        // FIREBASE CONFIGURATION (Kan keessan)
-        // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyCraTczVNl2oBTDp531KHyu6cINac37nhE",
             authDomain: "kitchat-6dd20.firebaseapp.com",
@@ -161,10 +167,54 @@
         let currentUser = null;
         let currentChatId = null;
         let messagesListener = null;
+        let deferredPrompt = null;
 
-        // ============================================================
-        // AUTH & SCREEN NAVIGATION
-        // ============================================================
+        function escapeHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function getChatId(uid) {
+            return currentUser && currentUser.uid ? (currentUser.uid > uid ? currentUser.uid + '_' + uid : uid + '_' + currentUser.uid) : null;
+        }
+
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./service-worker.js').catch((error) => {
+                        console.error('Service worker registration failed:', error);
+                    });
+                });
+            }
+        }
+
+        function setupInstallPrompt() {
+            const installBtn = document.getElementById('installAppBtn');
+
+            window.addEventListener('beforeinstallprompt', (event) => {
+                event.preventDefault();
+                deferredPrompt = event;
+                installBtn.classList.remove('hidden');
+            });
+
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) {
+                    alert('Install prompt is not available yet. Please open this app in a browser and try again.');
+                    return;
+                }
+
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('Install outcome:', outcome);
+                deferredPrompt = null;
+                installBtn.classList.add('hidden');
+            });
+        }
+
         document.getElementById('googleSignInBtn').addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
@@ -179,21 +229,23 @@
                 currentUser = user;
                 document.getElementById('loginScreen').classList.remove('active');
                 switchTab('chats');
-                
+
                 db.ref('users/' + user.uid).set({
                     name: user.displayName || 'User',
                     email: user.email,
-                    photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}&background=random`
+                    photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=random`
                 });
 
                 document.getElementById('profileName').textContent = user.displayName || 'User';
-                document.getElementById('profileEmail').textContent = user.email;
-                if(user.photoURL) document.getElementById('profilePic').src = user.photoURL;
+                document.getElementById('profileEmail').textContent = user.email || 'No email';
+                if (user.photoURL) {
+                    document.getElementById('profilePic').src = user.photoURL;
+                }
 
                 loadUsers();
             } else {
                 currentUser = null;
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
                 document.getElementById('loginScreen').classList.add('active');
             }
         });
@@ -201,9 +253,9 @@
         function logout() { auth.signOut(); }
 
         function switchTab(tab) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
+            document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach((nav) => nav.classList.remove('active'));
+
             if (tab === 'chats') {
                 document.getElementById('chatsScreen').classList.add('active');
                 document.querySelectorAll('.nav-item')[0].classList.add('active');
@@ -216,35 +268,37 @@
             }
         }
 
-        // ============================================================
-        // LOAD USERS (Contacts & Chats List)
-        // ============================================================
         function loadUsers() {
             db.ref('users').on('value', (snapshot) => {
-                const users = snapshot.val();
+                const users = snapshot.val() || {};
                 const chatsList = document.getElementById('userList');
                 const contactsList = document.getElementById('contactsList');
-                
+
                 chatsList.innerHTML = '';
                 contactsList.innerHTML = '';
 
                 let userCount = 0;
 
                 for (const uid in users) {
-                    if (uid === currentUser.uid) continue; // Skip self
+                    if (!users[uid] || uid === currentUser.uid) continue;
+
                     userCount++;
                     const u = users[uid];
-                    
+                    const safeName = escapeHtml(u.name || 'Unknown User');
+                    const safePhoto = u.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(safeName)}&background=random`;
+                    const safeUid = escapeHtml(uid);
+
                     const userHTML = `
-                        <div onclick="openChat('${uid}', '${u.name}', '${u.photoURL}')" class="flex items-center gap-3 p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition">
-                            <img src="${u.photoURL}" class="w-12 h-12 rounded-full object-cover border border-gray-200">
+                        <div onclick="openChat('${safeUid}', '${safeName}', '${safePhoto}')" class="flex items-center gap-3 p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition">
+                            <img src="${safePhoto}" class="w-12 h-12 rounded-full object-cover border border-gray-200">
                             <div class="flex-1">
-                                <h3 class="font-semibold text-gray-800">${u.name}</h3>
+                                <h3 class="font-semibold text-gray-800">${safeName}</h3>
                                 <p class="text-xs text-gray-500">Tap to chat</p>
                             </div>
                             <i class="fas fa-comment-dots text-green-500"></i>
                         </div>
                     `;
+
                     chatsList.innerHTML += userHTML;
                     contactsList.innerHTML += userHTML;
                 }
@@ -256,15 +310,12 @@
             });
         }
 
-        // ============================================================
-        // CHAT ROOM LOGIC
-        // ============================================================
         function openChat(uid, name, photo) {
-            currentChatId = currentUser.uid > uid ? currentUser.uid + "_" + uid : uid + "_" + currentUser.uid;
+            currentChatId = getChatId(uid);
 
             document.getElementById('chatName').textContent = name;
             document.getElementById('chatAvatar').src = photo;
-            
+
             document.getElementById('chatsScreen').classList.remove('active');
             document.getElementById('chatRoomScreen').classList.add('active');
 
@@ -272,62 +323,71 @@
         }
 
         function closeChatRoom() {
+            if (messagesListener && currentChatId) {
+                db.ref('chats/' + currentChatId + '/messages').off('child_added', messagesListener);
+                messagesListener = null;
+            }
+
             document.getElementById('chatRoomScreen').classList.remove('active');
             switchTab('chats');
             currentChatId = null;
-            if(messagesListener) {
-                db.ref('chats/' + currentChatId + '/messages').off('child_added', messagesListener);
-            }
         }
 
         function loadMessages() {
             const chatMessagesDiv = document.getElementById('chatMessages');
             chatMessagesDiv.innerHTML = '';
-            
-            if (messagesListener) db.ref('chats/' + currentChatId + '/messages').off();
 
-            messagesListener = db.ref('chats/' + currentChatId + '/messages').limitToLast(100).on('child_added', (snapshot) => {
+            if (!currentChatId) return;
+
+            if (messagesListener) {
+                db.ref('chats/' + currentChatId + '/messages').off('child_added', messagesListener);
+            }
+
+            messagesListener = (snapshot) => {
                 const msg = snapshot.val();
+                if (!msg) return;
                 renderMessage(msg, snapshot.key);
-            });
+            };
+
+            db.ref('chats/' + currentChatId + '/messages').limitToLast(100).on('child_added', messagesListener);
         }
 
         function renderMessage(msg, msgId) {
             const chatMessagesDiv = document.getElementById('chatMessages');
             const isOut = msg.senderId === currentUser.uid;
-            
+
             const div = document.createElement('div');
             div.className = `flex ${isOut ? 'justify-end' : 'justify-start'} mb-1`;
             div.setAttribute('data-msg-id', msgId);
 
             let contentHTML = '';
-            
+
             if (msg.type === 'text') {
-                contentHTML = `<p class="text-[15px]">${msg.text}</p>`;
+                contentHTML = `<p class="text-[15px]">${escapeHtml(msg.text || '')}</p>`;
             } else if (msg.type === 'image') {
-                contentHTML = `<img src="${msg.url}" class="max-w-[200px] rounded-lg mb-1 cursor-pointer" onclick="window.open('${msg.url}')">`;
+                contentHTML = `<img src="${msg.url || ''}" class="max-w-[200px] rounded-lg mb-1 cursor-pointer" onclick="window.open('${msg.url || ''}')">`;
             } else if (msg.type === 'video') {
-                contentHTML = `<video src="${msg.url}" controls class="max-w-[200px] rounded-lg mb-1"></video>`;
+                contentHTML = `<video src="${msg.url || ''}" controls class="max-w-[200px] rounded-lg mb-1"></video>`;
             } else if (msg.type === 'audio') {
-                contentHTML = `<audio src="${msg.url}" controls class="max-w-[200px] mb-1"></audio>`;
+                contentHTML = `<audio src="${msg.url || ''}" controls class="max-w-[200px] mb-1"></audio>`;
             } else if (msg.type === 'file') {
-                contentHTML = `<a href="${msg.url}" target="_blank" class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg text-blue-600 text-sm mb-1"><i class="fas fa-file-alt text-lg"></i> Download File</a>`;
+                contentHTML = `<a href="${msg.url || '#'}" target="_blank" class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg text-blue-600 text-sm mb-1"><i class="fas fa-file-alt text-lg"></i> Download File</a>`;
             }
 
             let checkmarks = '';
             if (isOut) {
-                checkmarks = msg.read ? 
-                    `<i class="fas fa-check-double text-[#34b7f1] text-[12px]"></i>` : 
-                    `<i class="fas fa-check text-gray-500 text-[12px]"></i>`;
+                checkmarks = msg.read ?
+                    '<i class="fas fa-check-double text-[#34b7f1] text-[12px]"></i>' :
+                    '<i class="fas fa-check text-gray-500 text-[12px]"></i>';
             }
 
             div.innerHTML = `
                 <div class="msg-bubble ${isOut ? 'msg-outgoing' : 'msg-incoming'}">
                     ${contentHTML}
-                    <span class="msg-time">${msg.time} ${checkmarks}</span>
+                    <span class="msg-time">${escapeHtml(msg.time || '')} ${checkmarks}</span>
                 </div>
             `;
-            
+
             chatMessagesDiv.appendChild(div);
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
 
@@ -336,12 +396,9 @@
             }
         }
 
-        // ============================================================
-        // SENDING TEXT & FILES
-        // ============================================================
         document.getElementById('sendButton').addEventListener('click', sendTextMessage);
-        document.getElementById('messageInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendTextMessage();
+        document.getElementById('messageInput').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') sendTextMessage();
         });
 
         function sendTextMessage() {
@@ -366,14 +423,14 @@
             const file = event.target.files[0];
             if (!file || !currentChatId) return;
 
-            alert("Faayiliin olkaa'amaa jira... Maaloo eegaa.");
+            alert('Faayiliin olkaa\'amaa jira... Maaloo eegaa.');
 
             const storageRef = storage.ref('chat_files/' + Date.now() + '_' + file.name);
-            
+
             try {
                 const snapshot = await storageRef.put(file);
                 const downloadURL = await snapshot.ref.getDownloadURL();
-                
+
                 let type = 'file';
                 if (file.type.startsWith('image/')) type = 'image';
                 else if (file.type.startsWith('video/')) type = 'video';
@@ -391,10 +448,14 @@
 
                 db.ref('chats/' + currentChatId + '/messages').push(msgData);
             } catch (error) {
-                alert("Dogoggora faayilii erguu: " + error.message + "\nMirkaneessi Firebase Storage kee dandeessifameera.");
+                alert('Dogoggora faayilii erguu: ' + error.message + '\nMirkaneessi Firebase Storage kee dandeessifameera.');
             }
-            event.target.value = ''; 
+
+            event.target.value = '';
         }
+
+        registerServiceWorker();
+        setupInstallPrompt();
     </script>
 </body>
 </html>
