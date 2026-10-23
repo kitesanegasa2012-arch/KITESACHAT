@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kitchat - Telegram Clone</title>
 
-    <!-- Manifest sirreeffame: Icoonii fi halluu sirrii -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Kitchat","short_name":"Kitchat","description":"Realtime Messenger","start_url":"./","display":"standalone","background_color":"%2316a34a","theme_color":"%2316a34a","icons":[{"src":"https://ui-avatars.com/api/?name=Kitchat&background=16a34a&color=fff&size=192&font-size=0.33","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"https://ui-avatars.com/api/?name=Kitchat&background=16a34a&color=fff&size=512&font-size=0.33","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
+    <!-- MANIFEST HAARAA: Icoonii Onnee Magariisaa fi Adii -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Kitchat","short_name":"Kitchat","description":"Realtime Messenger","start_url":"./","display":"standalone","background_color":"%2316a34a","theme_color":"%2316a34a","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%2316a34a%22/><path d=%22M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z%22 fill=%22white%22/></svg>","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"},{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22512%22 height=%22512%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22120%22 fill=%22%2316a34a%22/><path d=%22M256 400 C256 400 96 280 96 176 C96 120 150 96 200 96 C230 96 256 120 256 150 C256 120 282 96 312 96 C362 96 416 120 416 176 C416 280 256 400 256 400 Z%22 fill=%22white%22/></svg>","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -46,7 +46,7 @@
         <!-- LOGIN SCREEN -->
         <div id="loginScreen" class="screen active px-6 py-10 justify-center items-center bg-white" style="z-index: 100;">
             <div class="w-20 h-20 rounded-3xl bg-[#16a34a] flex items-center justify-center text-white text-4xl mb-6 shadow-lg">
-                <i class="fas fa-comment-dots"></i>
+                <i class="fas fa-heart"></i> <!-- Onnee magariisaa -->
             </div>
             <h1 class="text-2xl font-bold text-gray-800 mb-2">Baga nagaan dhuftan Kitchat</h1>
             <p class="text-gray-500 text-sm mb-8 text-center">Qunnamtii real-time, saffisaa fi salphaa.</p>
@@ -226,7 +226,6 @@
                 const chatsList = document.getElementById('userList');
                 const contactsList = document.getElementById('contactsList');
                 
-                // Clear lists but keep loading text if needed
                 chatsList.innerHTML = '';
                 contactsList.innerHTML = '';
 
@@ -262,7 +261,6 @@
         // CHAT ROOM LOGIC
         // ============================================================
         function openChat(uid, name, photo) {
-            // Generate consistent Chat ID (sorted UIDs)
             currentChatId = currentUser.uid > uid ? currentUser.uid + "_" + uid : uid + "_" + currentUser.uid;
 
             document.getElementById('chatName').textContent = name;
@@ -287,10 +285,8 @@
             const chatMessagesDiv = document.getElementById('chatMessages');
             chatMessagesDiv.innerHTML = '';
             
-            // Detach old listener
             if (messagesListener) db.ref('chats/' + currentChatId + '/messages').off();
 
-            // Listen for new messages
             messagesListener = db.ref('chats/' + currentChatId + '/messages').limitToLast(100).on('child_added', (snapshot) => {
                 const msg = snapshot.val();
                 renderMessage(msg, snapshot.key);
@@ -307,7 +303,6 @@
 
             let contentHTML = '';
             
-            // Render based on type
             if (msg.type === 'text') {
                 contentHTML = `<p class="text-[15px]">${msg.text}</p>`;
             } else if (msg.type === 'image') {
@@ -320,7 +315,6 @@
                 contentHTML = `<a href="${msg.url}" target="_blank" class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg text-blue-600 text-sm mb-1"><i class="fas fa-file-alt text-lg"></i> Download File</a>`;
             }
 
-            // Checkmarks for Read/Delivered
             let checkmarks = '';
             if (isOut) {
                 checkmarks = msg.read ? 
@@ -338,7 +332,6 @@
             chatMessagesDiv.appendChild(div);
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
 
-            // Mark as read if incoming and unread
             if (!isOut && !msg.read) {
                 db.ref('chats/' + currentChatId + '/messages/' + msgId).update({ read: true });
             }
@@ -374,7 +367,6 @@
             const file = event.target.files[0];
             if (!file || !currentChatId) return;
 
-            // Alert user that upload started
             alert("Faayiliin olkaa'amaa jira... Maaloo eegaa.");
 
             const storageRef = storage.ref('chat_files/' + Date.now() + '_' + file.name);
@@ -402,7 +394,7 @@
             } catch (error) {
                 alert("Dogoggora faayilii erguu: " + error.message + "\nMirkaneessi Firebase Storage kee dandeessifameera.");
             }
-            event.target.value = ''; // Reset input
+            event.target.value = ''; 
         }
     </script>
 </body>
